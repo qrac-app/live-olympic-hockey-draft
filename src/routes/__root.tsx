@@ -36,7 +36,6 @@ export const Route = createRootRouteWithContext()({
     // all queries, mutations and action made with TanStack Query will be
     // authenticated by an identity token.
     const { userId, token } = await fetchAuth();
-
     return { userId, token };
   },
   shellComponent: RootComponent,
