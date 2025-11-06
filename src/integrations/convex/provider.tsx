@@ -1,5 +1,6 @@
 import { setupConvex, ConvexProvider } from "convex-solidjs";
 import type { JSXElement } from "solid-js";
+import { fetchAuth } from "~/lib/auth";
 
 const CONVEX_URL = import.meta.env.VITE_CONVEX_URL;
 if (!CONVEX_URL) {
@@ -11,22 +12,12 @@ export const convexClient = setupConvex(CONVEX_URL);
 
 // Configure auth token fetcher
 convexClient.setAuth(async () => {
-  try {
-    // Fetch the Convex token from Better Auth
-    const response = await fetch("/api/auth/convex/token", {
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return data.token || null;
-  } catch (error) {
-    console.error("Failed to fetch Convex token:", error);
-    return null;
+  const auth = await convexClient.getAuth();
+  if (!auth) {
+    const { token } = await fetchAuth();
+    return token;
   }
+  return auth.token;
 });
 
 export default function AppConvexProvider(props: { children: JSXElement }) {

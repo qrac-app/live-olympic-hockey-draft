@@ -1,8 +1,9 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/solid-router";
-import { createEffect, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import { authClient } from "~/lib/auth-client";
 import { Button } from "~/components/ui/button";
 import { TodoList } from "~/components/TodoList";
+import { fetchTodos } from "~/lib/auth";
 
 export const Route = createFileRoute("/_authed/dashboard")({
   component: Dashboard,
@@ -13,12 +14,6 @@ function Dashboard() {
   const session = authClient.useSession();
   const [isSigningOut, setIsSigningOut] = createSignal(false);
 
-  // Redirect to login if not authenticated
-  createEffect(() => {
-    if (!session().data?.session) {
-      navigate({ to: "/" });
-    }
-  });
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -33,7 +28,6 @@ function Dashboard() {
 
   return (
     <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800">
-      {/* Header/Navigation */}
       <header class="bg-white/10 backdrop-blur-md border-b border-white/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between items-center h-16">

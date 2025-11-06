@@ -5,7 +5,7 @@ import { Button } from "~/components/ui/button";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async (ctx) => {
-    if (ctx.context.session?.user?.id) {
+    if (ctx.context.token) {
       throw redirect({ to: "/dashboard" });
     }
   },

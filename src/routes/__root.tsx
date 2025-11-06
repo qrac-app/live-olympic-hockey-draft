@@ -3,7 +3,6 @@ import {
   Outlet,
   Scripts,
   createRootRouteWithContext,
-  redirect,
 } from "@tanstack/solid-router";
 import { TanStackRouterDevtools } from "@tanstack/solid-router-devtools";
 import ConvexProvider from "../integrations/convex/provider.tsx";
