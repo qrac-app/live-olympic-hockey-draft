@@ -75,6 +75,9 @@ function DuringDraft() {
   // Countdown timer and auto-advance
   onMount(() => {
     const updateCountdown = () => {
+      // Don't auto-advance if a pick is being made
+      if (isMakingPick()) return;
+
       const pick = currentPickData?.();
       if (pick && pick.startTime) {
         const now = Date.now();
@@ -122,6 +125,8 @@ function DuringDraft() {
         playerId,
       });
       setSelectedPlayer(null);
+      // Reset advance flag since we just made a pick
+      setHasAdvanced(false);
     } catch (err) {
       console.error("Failed to make pick:", err);
       alert(err instanceof Error ? err.message : "Failed to make pick");

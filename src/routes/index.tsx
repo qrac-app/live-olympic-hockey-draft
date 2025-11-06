@@ -1,11 +1,16 @@
-import { createFileRoute, redirect, useNavigate, useRouter } from "@tanstack/solid-router";
+import {
+  createFileRoute,
+  redirect,
+  useNavigate,
+  useRouter,
+} from "@tanstack/solid-router";
 import { createSignal, Show, createMemo, createEffect } from "solid-js";
 import { authClient } from "~/lib/auth-client";
 import { Button } from "~/components/ui/button";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async (ctx) => {
-    if (ctx.context.session) {
+    if (ctx.context.token && ctx.context.session) {
       throw redirect({ to: "/dashboard" });
     }
   },
@@ -27,9 +32,12 @@ function App() {
   const [isLoading, setIsLoading] = createSignal(false);
   const [errors, setErrors] = createSignal<ValidationErrors>({});
   const [isSignUp, setIsSignUp] = createSignal(false);
-  const [touched, setTouched] = createSignal({ email: false, password: false, name: false });
+  const [touched, setTouched] = createSignal({
+    email: false,
+    password: false,
+    name: false,
+  });
   const [showPassword, setShowPassword] = createSignal(false);
-
 
   // Email validation
   const validateEmail = (email: string): string | undefined => {
@@ -48,7 +56,8 @@ function App() {
   // Name validation for signup
   const validateName = (name: string): string | undefined => {
     if (isSignUp() && !name) return "Name is required";
-    if (isSignUp() && name.length < 2) return "Name must be at least 2 characters";
+    if (isSignUp() && name.length < 2)
+      return "Name must be at least 2 characters";
     return undefined;
   };
 
@@ -117,7 +126,10 @@ function App() {
           password: password(),
         });
         if (res.error) {
-          setErrors({ general: "Invalid email or password. Please check your credentials and try again." });
+          setErrors({
+            general:
+              "Invalid email or password. Please check your credentials and try again.",
+          });
         }
         return navigate({ to: "/dashboard" });
       }
@@ -136,16 +148,22 @@ function App() {
       }
 
       // Provide helpful context for common errors
-      if (errorMessage.toLowerCase().includes("user not found") ||
-        errorMessage.toLowerCase().includes("invalid credentials")) {
+      if (
+        errorMessage.toLowerCase().includes("user not found") ||
+        errorMessage.toLowerCase().includes("invalid credentials")
+      ) {
         errorMessage = isSignUp()
           ? "Unable to create account. Please check your information and try again."
           : "Invalid email or password. Please check your credentials and try again.";
       } else if (errorMessage.toLowerCase().includes("already exists")) {
-        errorMessage = "An account with this email already exists. Please sign in instead.";
-      } else if (errorMessage.toLowerCase().includes("network") ||
-        errorMessage.toLowerCase().includes("fetch")) {
-        errorMessage = "Network error. Please check your connection and try again.";
+        errorMessage =
+          "An account with this email already exists. Please sign in instead.";
+      } else if (
+        errorMessage.toLowerCase().includes("network") ||
+        errorMessage.toLowerCase().includes("fetch")
+      ) {
+        errorMessage =
+          "Network error. Please check your connection and try again.";
       }
 
       setErrors({ general: errorMessage });
@@ -174,11 +192,18 @@ function App() {
           {/* Header */}
           <div class="text-center mb-8">
             <div class="inline-block p-3 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl mb-4">
-              <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <svg
+                class="w-8 h-8 text-white"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
                 {/* Hockey puck icon */}
                 <ellipse cx="12" cy="8" rx="9" ry="3" opacity="0.3" />
                 <path d="M21 8c0 1.657-4.03 3-9 3S3 9.657 3 8s4.03-3 9-3 9 1.343 9 3z" />
-                <path d="M3 8v8c0 1.657 4.03 3 9 3s9-1.343 9-3V8c0 1.657-4.03 3-9 3s-9-1.343-9-3z" opacity="0.8" />
+                <path
+                  d="M3 8v8c0 1.657 4.03 3 9 3s9-1.343 9-3V8c0 1.657-4.03 3-9 3s-9-1.343-9-3z"
+                  opacity="0.8"
+                />
                 <path d="M21 16c0 1.657-4.03 3-9 3s-9-1.343-9-3" />
               </svg>
             </div>
@@ -186,7 +211,9 @@ function App() {
               Live Olympic Hockey Draft
             </h1>
             <p class="text-slate-600 text-sm">
-              {isSignUp() ? "Create your account to get started" : "Welcome back! Please sign in"}
+              {isSignUp()
+                ? "Create your account to get started"
+                : "Welcome back! Please sign in"}
             </p>
           </div>
 
@@ -207,16 +234,25 @@ function App() {
                     value={name()}
                     onInput={(e) => setName(e.currentTarget.value)}
                     onBlur={() => setTouched({ ...touched(), name: true })}
-                    class={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors().name && touched().name
-                      ? "border-red-500 bg-red-50"
-                      : "border-slate-300 bg-white"
-                      }`}
+                    class={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                      errors().name && touched().name
+                        ? "border-red-500 bg-red-50"
+                        : "border-slate-300 bg-white"
+                    }`}
                     placeholder="John Doe"
                   />
                   <Show when={errors().name && touched().name}>
                     <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
-                      <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                      <svg
+                        class="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clip-rule="evenodd"
+                        />
                       </svg>
                       {errors().name}
                     </p>
@@ -238,17 +274,26 @@ function App() {
                   value={email()}
                   onInput={(e) => setEmail(e.currentTarget.value)}
                   onBlur={() => setTouched({ ...touched(), email: true })}
-                  class={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${errors().email && touched().email
-                    ? "border-red-500 bg-red-50"
-                    : "border-slate-300 bg-white"
-                    }`}
+                  class={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                    errors().email && touched().email
+                      ? "border-red-500 bg-red-50"
+                      : "border-slate-300 bg-white"
+                  }`}
                   placeholder="you@example.com"
                   autocomplete="email"
                 />
                 <Show when={errors().email && touched().email}>
                   <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    <svg
+                      class="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd"
+                      />
                     </svg>
                     {errors().email}
                   </p>
@@ -270,12 +315,15 @@ function App() {
                     value={password()}
                     onInput={(e) => setPassword(e.currentTarget.value)}
                     onBlur={() => setTouched({ ...touched(), password: true })}
-                    class={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12 ${errors().password && touched().password
-                      ? "border-red-500 bg-red-50"
-                      : "border-slate-300 bg-white"
-                      }`}
+                    class={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-12 ${
+                      errors().password && touched().password
+                        ? "border-red-500 bg-red-50"
+                        : "border-slate-300 bg-white"
+                    }`}
                     placeholder="••••••••"
-                    autocomplete={isSignUp() ? "new-password" : "current-password"}
+                    autocomplete={
+                      isSignUp() ? "new-password" : "current-password"
+                    }
                   />
                   <button
                     type="button"
@@ -285,14 +333,39 @@ function App() {
                     <Show
                       when={showPassword()}
                       fallback={
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        <svg
+                          class="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
                         </svg>
                       }
                     >
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                        />
                       </svg>
                     </Show>
                   </button>
@@ -300,8 +373,16 @@ function App() {
 
                 <Show when={errors().password && touched().password}>
                   <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    <svg
+                      class="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd"
+                      />
                     </svg>
                     {errors().password}
                   </p>
@@ -311,11 +392,21 @@ function App() {
               {/* General error */}
               <Show when={errors().general}>
                 <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-                  <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                  <svg
+                    class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clip-rule="evenodd"
+                    />
                   </svg>
                   <div>
-                    <h3 class="text-sm font-semibold text-red-800">Authentication Error</h3>
+                    <h3 class="text-sm font-semibold text-red-800">
+                      Authentication Error
+                    </h3>
                     <p class="text-sm text-red-700 mt-1">{errors().general}</p>
                   </div>
                 </div>
@@ -331,11 +422,28 @@ function App() {
                   when={!isLoading()}
                   fallback={
                     <div class="flex items-center justify-center gap-2">
-                      <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      <svg
+                        class="animate-spin h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          class="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          stroke-width="4"
+                        />
+                        <path
+                          class="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
                       </svg>
-                      <span>{isSignUp() ? "Creating account..." : "Signing in..."}</span>
+                      <span>
+                        {isSignUp() ? "Creating account..." : "Signing in..."}
+                      </span>
                     </div>
                   }
                 >

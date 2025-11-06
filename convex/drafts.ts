@@ -752,6 +752,18 @@ export const makePick = mutation({
       draftPickNum: pickNumber,
     });
 
+    // Re-read draft to ensure we have the latest state before advancing
+    const updatedDraft = await ctx.db.get(args.draftId);
+    if (!updatedDraft || updatedDraft.status !== "DURING") {
+      throw new Error("Draft state changed during pick");
+    }
+
+    // Verify the pick number hasn't changed (another pick was made)
+    if (updatedDraft.currentDraftPickNumber !== pickNumber) {
+      // Another pick was made, which is fine - the turn already advanced
+      return { success: true, alreadyAdvanced: true };
+    }
+
     // Advance to next pick
     const maxPicks = numTeams * 10; // Assuming 10 rounds
     const nextPickNumber = pickNumber + 1;

@@ -52,7 +52,7 @@ function Dashboard() {
             </div>
 
             {/* Draft Status Cards */}
-            <div class="grid md:grid-cols-2 gap-6">
+            <div class="grid md:grid-cols-3 gap-6">
               <div class="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-slate-700">
                 <div class="flex items-center justify-between mb-4">
                   <h3 class="text-lg font-semibold text-white">Pre-Draft</h3>
@@ -111,6 +111,36 @@ function Dashboard() {
                     0) === 0
                     ? "No active drafts"
                     : "In progress"}
+                </p>
+              </div>
+
+              <div class="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-2xl p-6 border border-slate-700">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-lg font-semibold text-white">Completed</h3>
+                  <div class="p-2 bg-green-600/20 rounded-lg border border-green-600/30">
+                    <svg
+                      class="w-5 h-5 text-green-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <p class="text-3xl font-bold text-white">
+                  {drafts?.()?.filter((d) => d?.status === "POST").length ?? 0}
+                </p>
+                <p class="text-sm text-slate-300 mt-2">
+                  {(drafts?.()?.filter((d) => d?.status === "POST").length ??
+                    0) === 0
+                    ? "No completed drafts"
+                    : "Drafts finished"}
                 </p>
               </div>
             </div>
