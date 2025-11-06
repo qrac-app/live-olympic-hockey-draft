@@ -13,7 +13,7 @@ function CreateDraft() {
 
   // Get current date and time as defaults
   const now = new Date();
-  const currentDate = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+  const currentDate = now.toISOString().split("T")[0]; // YYYY-MM-DD format
   const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
 
   const [draftName, setDraftName] = createSignal("");
@@ -21,6 +21,7 @@ function CreateDraft() {
   const [startTime, setStartTime] = createSignal(currentTime);
   const [isCreating, setIsCreating] = createSignal(false);
   const [error, setError] = createSignal("");
+  const [teamName, setTeamName] = createSignal("");
 
   const { mutate: createDraft } = useMutation(api.drafts.create);
 
@@ -43,6 +44,7 @@ function CreateDraft() {
       const draftId = await createDraft({
         name: draftName(),
         startDatetime,
+        teamName: teamName(),
       });
 
       // Navigate to the newly created draft's pre-draft page
@@ -87,6 +89,25 @@ function CreateDraft() {
                   value={draftName()}
                   onInput={(e) => setDraftName(e.currentTarget.value)}
                   placeholder="e.g., 2026 Olympics Draft"
+                  class="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  required
+                />
+              </div>
+
+              {/* Your Team Name */}
+              <div>
+                <label
+                  for="team-name"
+                  class="block text-sm font-medium text-slate-200 mb-2"
+                >
+                  Your Team Name
+                </label>
+                <input
+                  id="team-name"
+                  type="text"
+                  value={teamName()}
+                  onInput={(e) => setTeamName(e.currentTarget.value)}
+                  placeholder="e.g., Team Name"
                   class="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   required
                 />
@@ -152,4 +173,3 @@ function CreateDraft() {
     </div>
   );
 }
-

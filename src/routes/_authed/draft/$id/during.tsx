@@ -2,7 +2,14 @@ import { createFileRoute, useNavigate } from "@tanstack/solid-router";
 import { useMutation, useQuery } from "convex-solidjs";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
-import { For, Show, createSignal, onMount, onCleanup, createEffect } from "solid-js";
+import {
+  For,
+  Show,
+  createSignal,
+  onMount,
+  onCleanup,
+  createEffect,
+} from "solid-js";
 import { Header } from "~/components/header";
 import { authClient } from "~/lib/auth-client";
 
@@ -15,14 +22,22 @@ function DuringDraft() {
   const id = () => params().id;
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = createSignal("");
-  const [selectedPlayer, setSelectedPlayer] = createSignal<Id<"draftablePlayers"> | null>(null);
+  const [selectedPlayer, setSelectedPlayer] =
+    createSignal<Id<"draftablePlayers"> | null>(null);
 
   const session = authClient.useSession();
   const draftId = id() as Id<"drafts">;
   const { data: draft } = useQuery(api.drafts.getDraftById, { draftId });
-  const { data: currentPickData } = useQuery(api.drafts.getCurrentPick, { draftId });
-  const { data: availablePlayers } = useQuery(api.drafts.getAvailablePlayers, { draftId });
-  const { data: recentPicks } = useQuery(api.drafts.getRecentPicks, { draftId, limit: 10 });
+  const { data: currentPickData } = useQuery(api.drafts.getCurrentPick, {
+    draftId,
+  });
+  const { data: availablePlayers } = useQuery(api.drafts.getAvailablePlayers, {
+    draftId,
+  });
+  const { data: recentPicks } = useQuery(api.drafts.getRecentPicks, {
+    draftId,
+    limit: 10,
+  });
   const { data: draftStats } = useQuery(api.drafts.getDraftStats, { draftId });
   const { mutate: finishDraft } = useMutation(api.drafts.finishDraft);
   const { mutate: advancePick } = useMutation(api.drafts.advancePick);
@@ -35,7 +50,12 @@ function DuringDraft() {
 
   const isHost = () => {
     const user = session()?.data?.user;
-    return user && draft?.() && draft()!.hostBetterAuthUserId && draft()!.hostBetterAuthUserId === user.id;
+    return (
+      user &&
+      draft?.() &&
+      draft()!.hostBetterAuthUserId &&
+      draft()!.hostBetterAuthUserId === user.id
+    );
   };
 
   const isMyTurn = () => {
@@ -162,17 +182,19 @@ function DuringDraft() {
               }
             >
               {(pick) => {
-                const myTurn = isMyTurn();
                 return (
-                  <div class={`rounded-lg p-4 border ${myTurn
-                      ? "bg-gradient-to-r from-green-600/30 to-emerald-600/30 border-green-500/50 ring-2 ring-green-500/50"
-                      : "bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-blue-500/30"
-                    }`}>
+                  <div
+                    class={`rounded-lg p-4 border ${
+                      isMyTurn()
+                        ? "bg-gradient-to-r from-green-600/30 to-emerald-600/30 border-green-500/50 ring-2 ring-green-500/50"
+                        : "bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-blue-500/30"
+                    }`}
+                  >
                     <div class="flex items-center justify-between">
                       <div class="flex-1">
                         <div class="flex items-center gap-2 mb-1">
                           <p class="text-sm text-slate-300">ON THE CLOCK</p>
-                          {myTurn && (
+                          {isMyTurn() && (
                             <span class="px-2 py-0.5 bg-green-500/30 text-green-300 text-xs font-bold rounded-full border border-green-500/50 animate-pulse">
                               YOUR TURN
                             </span>
@@ -181,10 +203,20 @@ function DuringDraft() {
                         <p class="text-2xl font-bold text-white">
                           {pick().team.teamName}
                         </p>
-                        <p class="text-slate-400 text-sm">Pick #{pick().pickNumber}</p>
+                        <p class="text-slate-400 text-sm">
+                          Pick #{pick().pickNumber}
+                        </p>
                       </div>
                       <div class="text-center">
-                        <div class={`text-4xl font-bold ${timeRemaining() <= 10 ? "text-red-400" : myTurn ? "text-green-300" : "text-white"}`}>
+                        <div
+                          class={`text-4xl font-bold ${
+                            timeRemaining() <= 10
+                              ? "text-red-400"
+                              : isMyTurn()
+                              ? "text-green-300"
+                              : "text-white"
+                          }`}
+                        >
                           {timeRemaining()}s
                         </div>
                         <p class="text-slate-400 text-sm">remaining</p>
@@ -201,8 +233,12 @@ function DuringDraft() {
                 <div class="flex items-center justify-center gap-3">
                   <div class="text-3xl">⏰</div>
                   <div>
-                    <p class="text-xl font-bold text-white">It's Your Turn to Pick!</p>
-                    <p class="text-green-200 text-sm">You have {timeRemaining()} seconds remaining</p>
+                    <p class="text-xl font-bold text-white">
+                      It's Your Turn to Pick!
+                    </p>
+                    <p class="text-green-200 text-sm">
+                      You have {timeRemaining()} seconds remaining
+                    </p>
                   </div>
                 </div>
               </div>
@@ -217,9 +253,12 @@ function DuringDraft() {
                 <div class="lg:col-span-2 bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-6 flex items-center justify-center">
                   <div class="text-center">
                     <div class="text-6xl mb-4">⏳</div>
-                    <p class="text-xl font-bold text-white mb-2">Waiting for Your Turn</p>
+                    <p class="text-xl font-bold text-white mb-2">
+                      Waiting for Your Turn
+                    </p>
                     <p class="text-slate-400">
-                      The player selection will appear when it's your turn to pick.
+                      The player selection will appear when it's your turn to
+                      pick.
                     </p>
                   </div>
                 </div>
@@ -260,7 +299,11 @@ function DuringDraft() {
                             selectedPlayer() === player._id
                               ? "bg-blue-600/20 border-blue-500"
                               : "bg-slate-900/50 border-slate-600 hover:bg-slate-900/80"
-                          } ${isMakingPick() ? "opacity-50 cursor-not-allowed" : ""}`}
+                          } ${
+                            isMakingPick()
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          }`}
                         >
                           <div class="flex items-center gap-4">
                             {player.avatar ? (
@@ -272,19 +315,26 @@ function DuringDraft() {
                                   // Fallback to initial if image fails to load
                                   const target = e.currentTarget;
                                   target.style.display = "none";
-                                  const fallback = target.nextElementSibling as HTMLElement;
+                                  const fallback =
+                                    target.nextElementSibling as HTMLElement;
                                   if (fallback) fallback.style.display = "flex";
                                 }}
                               />
                             ) : null}
                             <div
-                              class={`w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold ${player.avatar ? "hidden" : ""}`}
+                              class={`w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold ${
+                                player.avatar ? "hidden" : ""
+                              }`}
                             >
                               {player.name.charAt(0)}
                             </div>
                             <div class="text-left">
-                              <p class="text-white font-semibold">{player.name}</p>
-                              <p class="text-slate-400 text-sm">{player.position}</p>
+                              <p class="text-white font-semibold">
+                                {player.name}
+                              </p>
+                              <p class="text-slate-400 text-sm">
+                                {player.position}
+                              </p>
                             </div>
                           </div>
                           {selectedPlayer() === player._id && (
@@ -305,8 +355,8 @@ function DuringDraft() {
                   {isMakingPick()
                     ? "Making Pick..."
                     : selectedPlayer()
-                      ? "Confirm Pick"
-                      : "Select a Player"}
+                    ? "Confirm Pick"
+                    : "Select a Player"}
                 </button>
               </div>
             </Show>
@@ -367,19 +417,27 @@ function DuringDraft() {
                       </div>
                       <div class="flex justify-between">
                         <dt class="text-slate-400">Current Pick:</dt>
-                        <dd class="text-white font-semibold">#{stats().currentPick}</dd>
+                        <dd class="text-white font-semibold">
+                          #{stats().currentPick}
+                        </dd>
                       </div>
                       <div class="flex justify-between">
                         <dt class="text-slate-400">Forwards:</dt>
-                        <dd class="text-white font-semibold">{stats().forwards}</dd>
+                        <dd class="text-white font-semibold">
+                          {stats().forwards}
+                        </dd>
                       </div>
                       <div class="flex justify-between">
                         <dt class="text-slate-400">Defense:</dt>
-                        <dd class="text-white font-semibold">{stats().defense}</dd>
+                        <dd class="text-white font-semibold">
+                          {stats().defense}
+                        </dd>
                       </div>
                       <div class="flex justify-between">
                         <dt class="text-slate-400">Goalies:</dt>
-                        <dd class="text-white font-semibold">{stats().goalies}</dd>
+                        <dd class="text-white font-semibold">
+                          {stats().goalies}
+                        </dd>
                       </div>
                     </dl>
                   )}
@@ -387,7 +445,7 @@ function DuringDraft() {
               </div>
 
               {/* Admin Actions (for host only) */}
-              <Show when={isHost()}>
+              <Show when={isHost() && currentPickData?.()?.round === 12}>
                 <button
                   onClick={handleFinishDraft}
                   class="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium"
@@ -402,4 +460,3 @@ function DuringDraft() {
     </div>
   );
 }
-
