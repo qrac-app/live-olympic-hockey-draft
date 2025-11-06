@@ -15,10 +15,13 @@ function PostDraft() {
   const draftId = params().id as Id<"drafts">;
 
   const { data: draft } = useQuery(api.drafts.getDraftById, { draftId });
-  const { data: teamsWithRosters } = useQuery(api.drafts.getDraftRosters, { draftId });
+  const { data: teamsWithRosters } = useQuery(api.drafts.getDraftRosters, {
+    draftId,
+  });
   const { data: draftStats } = useQuery(api.drafts.getDraftStats, { draftId });
 
-  const [selectedTeamId, setSelectedTeamId] = createSignal<Id<"draftTeams"> | null>(null);
+  const [selectedTeamId, setSelectedTeamId] =
+    createSignal<Id<"draftTeams"> | null>(null);
 
   // Set first team as selected by default
   createMemo(() => {
@@ -80,7 +83,9 @@ function PostDraft() {
                       {draftData().name}
                     </h1>
                     <div class="flex items-center gap-4 text-slate-300">
-                      <span>✓ Completed {formatDate(draftData()._creationTime)}</span>
+                      <span>
+                        ✓ Completed {formatDate(draftData()._creationTime)}
+                      </span>
                       <span>•</span>
                       <span>Duration: {calculateDuration()}</span>
                     </div>
@@ -96,7 +101,9 @@ function PostDraft() {
                     <div class="grid grid-cols-4 gap-4 mt-6">
                       <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
                         <p class="text-slate-400 text-sm mb-1">Total Picks</p>
-                        <p class="text-2xl font-bold text-white">{stats().totalPicks}</p>
+                        <p class="text-2xl font-bold text-white">
+                          {stats().totalPicks}
+                        </p>
                       </div>
                       <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
                         <p class="text-slate-400 text-sm mb-1">Teams</p>
@@ -107,7 +114,10 @@ function PostDraft() {
                       <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
                         <p class="text-slate-400 text-sm mb-1">Rounds</p>
                         <p class="text-2xl font-bold text-white">
-                          {Math.ceil(stats().maxPicks / (teamsWithRosters?.()?.length || 1))}
+                          {Math.ceil(
+                            stats().maxPicks /
+                              (teamsWithRosters?.()?.length || 1)
+                          )}
                         </p>
                       </div>
                       <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
@@ -116,7 +126,11 @@ function PostDraft() {
                           {stats().totalPicks > 0
                             ? Math.floor((45 * stats().totalPicks) / 60)
                             : 0}
-                          :{String((45 * stats().totalPicks) % 60).padStart(2, "0")}
+                          :
+                          {String((45 * stats().totalPicks) % 60).padStart(
+                            2,
+                            "0"
+                          )}
                         </p>
                       </div>
                     </div>
@@ -143,10 +157,11 @@ function PostDraft() {
                     {(team) => (
                       <button
                         onClick={() => setSelectedTeamId(team.teamId)}
-                        class={`w-full text-left p-4 rounded-lg border transition-all ${selectedTeamId() === team.teamId
-                          ? "bg-indigo-600/20 border-indigo-500"
-                          : "bg-slate-900/50 border-slate-600 hover:bg-slate-900/80"
-                          }`}
+                        class={`w-full text-left p-4 rounded-lg border transition-all ${
+                          selectedTeamId() === team.teamId
+                            ? "bg-indigo-600/20 border-indigo-500"
+                            : "bg-slate-900/50 border-slate-600 hover:bg-slate-900/80"
+                        }`}
                       >
                         <p class="text-white font-semibold">{team.teamName}</p>
                         <p class="text-slate-400 text-sm">
@@ -182,7 +197,9 @@ function PostDraft() {
                       <Show
                         when={team().forwards.length > 0}
                         fallback={
-                          <p class="text-slate-400 text-sm">No forwards selected</p>
+                          <p class="text-slate-400 text-sm">
+                            No forwards selected
+                          </p>
                         }
                       >
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -190,12 +207,16 @@ function PostDraft() {
                             {(player) => (
                               <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
                                 <div class="flex justify-between items-start mb-1">
-                                  <p class="text-white font-semibold">{player.name}</p>
+                                  <p class="text-white font-semibold">
+                                    {player.name}
+                                  </p>
                                   <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded">
                                     #{player.pickNum}
                                   </span>
                                 </div>
-                                <p class="text-slate-400 text-sm">{player.position}</p>
+                                <p class="text-slate-400 text-sm">
+                                  {player.position}
+                                </p>
                               </div>
                             )}
                           </For>
@@ -212,7 +233,9 @@ function PostDraft() {
                       <Show
                         when={team().defense.length > 0}
                         fallback={
-                          <p class="text-slate-400 text-sm">No defensemen selected</p>
+                          <p class="text-slate-400 text-sm">
+                            No defensemen selected
+                          </p>
                         }
                       >
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -220,12 +243,16 @@ function PostDraft() {
                             {(player) => (
                               <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
                                 <div class="flex justify-between items-start mb-1">
-                                  <p class="text-white font-semibold">{player.name}</p>
+                                  <p class="text-white font-semibold">
+                                    {player.name}
+                                  </p>
                                   <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded">
                                     #{player.pickNum}
                                   </span>
                                 </div>
-                                <p class="text-slate-400 text-sm">{player.position}</p>
+                                <p class="text-slate-400 text-sm">
+                                  {player.position}
+                                </p>
                               </div>
                             )}
                           </For>
@@ -242,7 +269,9 @@ function PostDraft() {
                       <Show
                         when={team().goalies.length > 0}
                         fallback={
-                          <p class="text-slate-400 text-sm">No goalies selected</p>
+                          <p class="text-slate-400 text-sm">
+                            No goalies selected
+                          </p>
                         }
                       >
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -250,12 +279,16 @@ function PostDraft() {
                             {(player) => (
                               <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
                                 <div class="flex justify-between items-start mb-1">
-                                  <p class="text-white font-semibold">{player.name}</p>
+                                  <p class="text-white font-semibold">
+                                    {player.name}
+                                  </p>
                                   <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded">
                                     #{player.pickNum}
                                   </span>
                                 </div>
-                                <p class="text-slate-400 text-sm">{player.position}</p>
+                                <p class="text-slate-400 text-sm">
+                                  {player.position}
+                                </p>
                               </div>
                             )}
                           </For>
@@ -282,4 +315,3 @@ function PostDraft() {
     </div>
   );
 }
-

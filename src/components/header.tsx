@@ -28,14 +28,20 @@ export function Header() {
             class="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
             <div class="p-2 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg">
-              <svg
-                class="w-6 h-6"
-                fill="white"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-6 h-6" fill="white" viewBox="0 0 24 24">
                 {/* Hockey puck icon */}
-                <ellipse cx="12" cy="8" rx="9" ry="3" fill="white" opacity="0.3" />
-                <path d="M21 8c0 1.657-4.03 3-9 3S3 9.657 3 8s4.03-3 9-3 9 1.343 9 3z" fill="white" />
+                <ellipse
+                  cx="12"
+                  cy="8"
+                  rx="9"
+                  ry="3"
+                  fill="white"
+                  opacity="0.3"
+                />
+                <path
+                  d="M21 8c0 1.657-4.03 3-9 3S3 9.657 3 8s4.03-3 9-3 9 1.343 9 3z"
+                  fill="white"
+                />
                 <path
                   d="M3 8v8c0 1.657 4.03 3 9 3s9-1.343 9-3V8c0 1.657-4.03 3-9 3s-9-1.343-9-3z"
                   fill="white"

@@ -1,5 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/solid-router";
-import { For, createSignal, Show, onMount, onCleanup, createMemo, createEffect } from "solid-js";
+import {
+  For,
+  createSignal,
+  Show,
+  onMount,
+  onCleanup,
+  createMemo,
+  createEffect,
+} from "solid-js";
 import { useQuery, useMutation } from "convex-solidjs";
 import { api } from "../../../../../convex/_generated/api";
 import { authClient } from "~/lib/auth-client";
@@ -24,27 +32,28 @@ function PreDraft() {
   // Fetch draft data
   const { data: draft } = useQuery(api.drafts.getDraftById, { draftId });
   const { data: teams } = useQuery(api.drafts.getDraftTeams, { draftId });
-  const { data: onlineUsers } = useQuery(api.drafts.getOnlineUsers, { draftId });
+  const { data: onlineUsers } = useQuery(api.drafts.getOnlineUsers, {
+    draftId,
+  });
 
   // Start draft mutation
   const { mutate: startDraft } = useMutation(api.drafts.startDraft);
   const { mutate: updatePresence } = useMutation(api.drafts.updatePresence);
   const { mutate: removePresence } = useMutation(api.drafts.removePresence);
-  const { mutate: randomizeDraftTeams } = useMutation(api.drafts.randomizeDraftTeams);
+  const { mutate: randomizeDraftTeams } = useMutation(
+    api.drafts.randomizeDraftTeams
+  );
 
   // Check if current user is host
   const isHost = () => {
     const user = session()?.data?.user;
-    return user && draft?.() && draft()!.hostBetterAuthUserId && draft()!.hostBetterAuthUserId === user.id;
+    return (
+      user &&
+      draft?.() &&
+      draft()!.hostBetterAuthUserId &&
+      draft()!.hostBetterAuthUserId === user.id
+    );
   };
-
-  // Redirect to during page if draft status is DURING
-  createEffect(() => {
-    const draftData = draft?.();
-    if (draftData && draftData.status === "DURING") {
-      navigate({ to: "/draft/$id/during", params: { id: draftId } });
-    }
-  });
 
   // Countdown timer
   onMount(() => {
@@ -134,6 +143,7 @@ function PreDraft() {
 
     try {
       await startDraft({ draftId });
+      // Navigate immediately - the createEffect will also handle this as a backup
       navigate({ to: "/draft/$id/during", params: { id: draftId } });
     } catch (err) {
       console.error("Failed to start draft:", err);
@@ -177,10 +187,13 @@ function PreDraft() {
                   <div class="flex items-center gap-4 text-slate-300">
                     <span>📅 {formatDate(draft()!.startDatetime)}</span>
                     <span>•</span>
-                    <span>👥 {teams?.()?.length || 0} {teams?.()?.length === 1 ? "team" : "teams"} joined</span>
+                    <span>
+                      👥 {teams?.()?.length || 0}{" "}
+                      {teams?.()?.length === 1 ? "team" : "teams"} joined
+                    </span>
                   </div>
                 </div>
-                <span class="px-4 py-2 bg-yellow-600/20 text-yellow-300 rounded-lg font-medium border border-yellow-600/30">
+                <span class="px-4 py-2 bg-yellow-600/20 text-yellow-300 text-sm rounded-lg font-medium border border-yellow-600/30">
                   Pre-Draft
                 </span>
               </div>
@@ -189,9 +202,13 @@ function PreDraft() {
               <div class="bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-lg p-6 border border-green-700/30 mb-6">
                 <div class="flex items-center justify-between">
                   <div>
-                    <p class="text-green-300 text-sm font-medium mb-1">Draft Starts In</p>
+                    <p class="text-green-300 text-sm font-medium mb-1">
+                      Draft Starts In
+                    </p>
                     <p class="text-3xl font-bold text-white">
-                      {timeRemaining() !== null ? formatTimeRemaining(timeRemaining()!) : "Loading..."}
+                      {timeRemaining() !== null
+                        ? formatTimeRemaining(timeRemaining()!)
+                        : "Loading..."}
                     </p>
                   </div>
                   <div class="text-6xl">⏰</div>
@@ -202,7 +219,9 @@ function PreDraft() {
               <div class="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 rounded-lg p-6 border border-blue-700/30">
                 <div class="flex items-center justify-between gap-4">
                   <div class="flex-1 min-w-0">
-                    <p class="text-blue-300 text-sm font-medium mb-2">Share Draft Link</p>
+                    <p class="text-blue-300 text-sm font-medium mb-2">
+                      Share Draft Link
+                    </p>
                     <div class="flex items-center gap-2 bg-slate-900/50 rounded-lg p-3 border border-slate-600">
                       <input
                         type="text"
@@ -248,15 +267,19 @@ function PreDraft() {
               <div class="space-y-3">
                 <For each={teams?.() || []}>
                   {(team) => {
-                    const isCurrentUser = () => currentUserId() === team.betterAuthUserId;
+                    const isCurrentUser = () =>
+                      currentUserId() === team.betterAuthUserId;
                     const isOnline = createMemo(() => {
                       const online = onlineUsers?.();
-                      return online ? online.includes(team.betterAuthUserId) : false;
+                      return online
+                        ? online.includes(team.betterAuthUserId)
+                        : false;
                     });
                     return (
                       <div
-                        class={`flex items-center justify-between p-4 rounded-lg border ${"bg-slate-900/50 border-slate-600"
-                          } ${isCurrentUser() ? "ring-2 ring-green-500/50" : ""}`}
+                        class={`flex items-center justify-between p-4 rounded-lg border ${"bg-slate-900/50 border-slate-600"} ${
+                          isCurrentUser() ? "ring-2 ring-green-500/50" : ""
+                        }`}
                       >
                         <div class="flex items-center gap-4">
                           <div class="w-10 h-10 flex items-center justify-center bg-slate-700 rounded-full text-white font-bold">
@@ -264,7 +287,9 @@ function PreDraft() {
                           </div>
                           <div>
                             <div class="flex items-center gap-2">
-                              <p class="text-white font-semibold">{team.teamName}</p>
+                              <p class="text-white font-semibold">
+                                {team.teamName}
+                              </p>
                               {isCurrentUser() && (
                                 <span class="px-2 py-0.5 bg-green-600/20 text-green-400 text-xs rounded-full border border-green-600/30">
                                   You
@@ -281,7 +306,9 @@ function PreDraft() {
                             fallback={
                               <div class="flex items-center gap-1">
                                 <div class="w-2 h-2 bg-slate-500 rounded-full"></div>
-                                <span class="text-slate-400 text-xs">Offline</span>
+                                <span class="text-slate-400 text-xs">
+                                  Offline
+                                </span>
                               </div>
                             }
                           >
@@ -316,14 +343,17 @@ function PreDraft() {
               </button>
               <button
                 onClick={handleStartDraft}
-                disabled={isStarting() || (timeRemaining() !== null && timeRemaining()! > 0)}
+                disabled={
+                  isStarting() ||
+                  (timeRemaining() !== null && timeRemaining()! > 0)
+                }
                 class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium shadow-lg shadow-green-500/30"
               >
                 {isStarting()
                   ? "Starting..."
                   : timeRemaining() !== null && timeRemaining()! > 0
-                    ? `Start Draft (${formatTimeRemaining(timeRemaining()!)})`
-                    : "Start Draft →"}
+                  ? `Start Draft (${formatTimeRemaining(timeRemaining()!)})`
+                  : "Start Draft →"}
               </button>
             </Show>
             <Show when={!isHost()}>
@@ -334,6 +364,6 @@ function PreDraft() {
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 }

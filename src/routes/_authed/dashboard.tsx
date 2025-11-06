@@ -311,9 +311,9 @@ function Dashboard() {
                               <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-3">
                                   <span
-                                    class={`px-3 py-1 ${
+                                    class={`px-4 py-2 ${
                                       statusConfig().badgeClass
-                                    } text-xs font-bold rounded-full border`}
+                                    } text-sm font-medium rounded-lg border`}
                                   >
                                     {statusConfig().badgeText}
                                   </span>

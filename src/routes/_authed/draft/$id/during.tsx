@@ -118,6 +118,11 @@ function DuringDraft() {
     const playerId = selectedPlayer();
     if (!playerId) return;
 
+    // Prevent multiple simultaneous picks
+    if (isMakingPick()) {
+      return;
+    }
+
     setIsMakingPick(true);
     try {
       await makePickMutation({
@@ -172,7 +177,7 @@ function DuringDraft() {
                   )}
                 </Show>
               </div>
-              <span class="px-4 py-2 bg-red-600/20 text-red-300 rounded-lg font-medium border border-red-600/30 animate-pulse">
+              <span class="px-4 py-2 bg-red-600/20 text-red-300 text-sm rounded-lg font-medium border border-red-600/30 animate-pulse">
                 LIVE
               </span>
             </div>
@@ -311,21 +316,6 @@ function DuringDraft() {
                           }`}
                         >
                           <div class="flex items-center gap-4">
-                            {player.avatar ? (
-                              <img
-                                src={player.avatar}
-                                alt={player.name}
-                                class="w-12 h-12 rounded-full object-cover"
-                                onError={(e) => {
-                                  // Fallback to initial if image fails to load
-                                  const target = e.currentTarget;
-                                  target.style.display = "none";
-                                  const fallback =
-                                    target.nextElementSibling as HTMLElement;
-                                  if (fallback) fallback.style.display = "flex";
-                                }}
-                              />
-                            ) : null}
                             <div
                               class={`w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold ${
                                 player.avatar ? "hidden" : ""

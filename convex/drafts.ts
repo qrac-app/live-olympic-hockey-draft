@@ -610,6 +610,7 @@ export const getDraftRosters = query({
           teamId: team._id,
           teamName: team.teamName,
           draftOrderNumber: team.draftOrderNumber,
+          betterAuthUserId: team.betterAuthUserId,
           forwards,
           defense,
           goalies,
@@ -745,6 +746,43 @@ export const makePick = mutation({
       throw new Error("This player has already been picked");
     }
 
+    // Check if a pick for this pick number already exists (race condition protection)
+    // We need to check all picks for teams in this draft to see if pickNumber already exists
+    const allDraftPicks = await ctx.db.query("draftPicks").collect();
+
+    // Filter to picks for teams in this draft
+    const teamIdsSet = new Set(teams.map((t) => t._id));
+    const picksForThisDraft = allDraftPicks.filter((pick) =>
+      teamIdsSet.has(pick.draftTeamId)
+    );
+
+    const pickForThisNumberExists = picksForThisDraft.some(
+      (pick) => pick.draftPickNum === pickNumber
+    );
+
+    if (pickForThisNumberExists) {
+      // A pick for this number already exists - another mutation already made the pick
+      // Re-read draft to see current state
+      const updatedDraft = await ctx.db.get(args.draftId);
+      if (updatedDraft && updatedDraft.currentDraftPickNumber !== pickNumber) {
+        // Turn already advanced, which is fine
+        return { success: true, alreadyAdvanced: true };
+      }
+      throw new Error("A pick for this turn has already been made");
+    }
+
+    // Re-read draft one more time before inserting to ensure we have latest state
+    const draftBeforeInsert = await ctx.db.get(args.draftId);
+    if (!draftBeforeInsert || draftBeforeInsert.status !== "DURING") {
+      throw new Error("Draft is not in progress");
+    }
+
+    // Double-check the pick number hasn't changed
+    if (draftBeforeInsert.currentDraftPickNumber !== pickNumber) {
+      // Turn already advanced by another mutation
+      return { success: true, alreadyAdvanced: true };
+    }
+
     // Save the pick
     await ctx.db.insert("draftPicks", {
       draftablePlayerId: args.playerId,
@@ -752,7 +790,7 @@ export const makePick = mutation({
       draftPickNum: pickNumber,
     });
 
-    // Re-read draft to ensure we have the latest state before advancing
+    // Re-read draft one final time to ensure we have the latest state before advancing
     const updatedDraft = await ctx.db.get(args.draftId);
     if (!updatedDraft || updatedDraft.status !== "DURING") {
       throw new Error("Draft state changed during pick");
