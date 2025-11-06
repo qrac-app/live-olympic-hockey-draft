@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/solid-router";
 import { createEffect, createSignal } from "solid-js";
 import { authClient } from "~/lib/auth-client";
 import { Button } from "~/components/ui/button";
+import { TodoList } from "~/components/TodoList";
 
 export const Route = createFileRoute("/_authed/dashboard")({
   component: Dashboard,
@@ -144,6 +145,9 @@ function Dashboard() {
               </Button>
             </div>
           </div>
+
+          {/* Todo List */}
+          <TodoList />
 
           {/* Recent Activity */}
           <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-white/20">
