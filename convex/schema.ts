@@ -12,6 +12,8 @@ export default defineSchema({
             v.literal("DURING"),
             v.literal("POST")
         ),
+        currentDraftPickNumber: v.number(),
+        currentPickStartTime: v.optional(v.number()), // Timestamp when current pick started
     }).index("hostBetterAuthUserId", ["hostBetterAuthUserId"]),
 
     draftTeams: defineTable({

@@ -22,6 +22,7 @@ export const create = mutation({
             startDatetime: args.startDatetime,
             hostBetterAuthUserId: betterAuthUserId,
             status: "PRE",
+            currentDraftPickNumber: 1,
         });
 
         // Create a draft team for the host
@@ -256,16 +257,26 @@ export const startDraft = mutation({
         }
 
         // Check if countdown is over (start time has passed)
-        const now = Date.now();
-        if (draft.startDatetime > now) {
+        const currentTime = Date.now();
+        if (draft.startDatetime > currentTime) {
             throw new Error("Cannot start draft before the scheduled start time");
         }
 
+        // Get teams to determine total number
+        const teams = await ctx.db
+            .query("draftTeams")
+            .withIndex("draftId", (q) => q.eq("draftId", args.draftId))
+            .collect();
 
+        if (teams.length === 0) {
+            throw new Error("Cannot start draft with no teams");
+        }
 
-        // Update draft status to DURING
+        // Update draft status to DURING and initialize pick timing
         await ctx.db.patch(args.draftId, {
             status: "DURING",
+            currentDraftPickNumber: 1,
+            currentPickStartTime: currentTime,
         });
 
         return { success: true };
@@ -357,10 +368,103 @@ export const finishDraft = mutation({
             throw new Error("Draft is not in during status");
         }
 
-        // Update draft status to DURING
+        // Update draft status to POST
         await ctx.db.patch(args.draftId, {
             status: "POST",
         });
+
+        return { success: true };
+    },
+});
+
+// Get current pick information (which team is on the clock)
+export const getCurrentPick = query({
+    args: {
+        draftId: v.id("drafts"),
+    },
+    handler: async (ctx, args) => {
+        const draft = await ctx.db.get(args.draftId);
+        if (!draft || draft.status !== "DURING") {
+            return null;
+        }
+
+        // Get all teams sorted by draft order
+        const teams = await ctx.db
+            .query("draftTeams")
+            .withIndex("draftId", (q) => q.eq("draftId", args.draftId))
+            .collect();
+
+        teams.sort((a, b) => a.draftOrderNumber - b.draftOrderNumber);
+
+        if (teams.length === 0) {
+            return null;
+        }
+
+        const numTeams = teams.length;
+        const pickNumber = draft.currentDraftPickNumber;
+
+        // Calculate which team is on the clock (snake draft)
+        // Round 1: picks 1-N go in order (team 1, 2, 3, ...)
+        // Round 2: picks N+1-2N go in reverse (team N, N-1, N-2, ...)
+        // Round 3: picks 2N+1-3N go in order again, etc.
+        const round = Math.ceil(pickNumber / numTeams);
+        let teamIndex: number;
+
+        if (round % 2 === 1) {
+            // Odd rounds: forward order
+            teamIndex = ((pickNumber - 1) % numTeams);
+        } else {
+            // Even rounds: reverse order
+            teamIndex = numTeams - 1 - ((pickNumber - 1) % numTeams);
+        }
+
+        const currentTeam = teams[teamIndex];
+        const currentPickStartTime = draft.currentPickStartTime || Date.now();
+
+        return {
+            pickNumber,
+            round,
+            team: currentTeam,
+            startTime: currentPickStartTime,
+        };
+    },
+});
+
+// Advance to the next pick (called automatically after 45 seconds or manually)
+export const advancePick = mutation({
+    args: {
+        draftId: v.id("drafts"),
+    },
+    handler: async (ctx, args) => {
+        const draft = await ctx.db.get(args.draftId);
+        if (!draft || draft.status !== "DURING") {
+            throw new Error("Draft is not in progress");
+        }
+
+        // Get teams to determine total
+        const teams = await ctx.db
+            .query("draftTeams")
+            .withIndex("draftId", (q) => q.eq("draftId", args.draftId))
+            .collect();
+
+        const numTeams = teams.length;
+        const maxPicks = numTeams * 10; // Assuming 10 rounds for now
+
+        const nextPickNumber = draft.currentDraftPickNumber + 1;
+        const now = Date.now();
+
+        if (nextPickNumber > maxPicks) {
+            // Draft is complete
+            await ctx.db.patch(args.draftId, {
+                status: "POST",
+            });
+        } else {
+            // Advance to next pick
+            await ctx.db.patch(args.draftId, {
+                currentDraftPickNumber: nextPickNumber,
+                currentPickStartTime: now,
+            });
+        }
 
         return { success: true };
     },
