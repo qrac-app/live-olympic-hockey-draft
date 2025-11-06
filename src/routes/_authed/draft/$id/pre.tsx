@@ -106,6 +106,23 @@ function PreDraft() {
     }
   };
 
+  const getShareLink = () => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    return `${origin}/draft/join?id=${draftId}`;
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      const link = getShareLink();
+      await navigator.clipboard.writeText(link);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy link:", err);
+      setError("Failed to copy link to clipboard");
+    }
+  };
+
   const currentUserId = () => session()?.data?.user?.id;
 
   return (
@@ -142,6 +159,31 @@ function PreDraft() {
                     </p>
                   </div>
                   <div class="text-6xl">⏰</div>
+                </div>
+              </div>
+
+              {/* Share Link */}
+              <div class="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 rounded-lg p-6 border border-blue-700/30">
+                <div class="flex items-center justify-between gap-4">
+                  <div class="flex-1 min-w-0">
+                    <p class="text-blue-300 text-sm font-medium mb-2">Share Draft Link</p>
+                    <div class="flex items-center gap-2 bg-slate-900/50 rounded-lg p-3 border border-slate-600">
+                      <input
+                        type="text"
+                        value={getShareLink()}
+                        readonly
+                        class="flex-1 bg-transparent text-white text-sm focus:outline-none cursor-text"
+                      />
+                      <button
+                        onClick={handleCopyLink}
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm whitespace-nowrap flex items-center gap-2"
+                      >
+                        <Show when={copySuccess()} fallback={<>📋 Copy</>}>
+                          ✓ Copied!
+                        </Show>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
