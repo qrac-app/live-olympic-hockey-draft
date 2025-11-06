@@ -36,11 +36,4 @@ export default defineSchema({
     })
         .index("draftTeamId", ["draftTeamId"])
         .index("draftablePlayerId", ["draftablePlayerId"]),
-
-    todos: defineTable({
-        betterAuthUserId: v.optional(v.string()),
-        userId: v.optional(v.string()), // Legacy field for backward compatibility
-        text: v.string(),
-        isCompleted: v.boolean(),
-    }).index("betterAuthUserId", ["betterAuthUserId"]),
 });

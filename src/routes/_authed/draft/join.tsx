@@ -1,4 +1,7 @@
-import { createFileRoute } from "@tanstack/solid-router";
+import { createFileRoute, useNavigate } from "@tanstack/solid-router";
+import { useMutation } from "convex-solidjs";
+import { api } from "convex/_generated/api";
+import type { Id } from "convex/_generated/dataModel";
 import { createSignal, Show, createEffect } from "solid-js";
 import { Header } from "~/components/header";
 
@@ -12,10 +15,14 @@ export const Route = createFileRoute("/_authed/draft/join")({
 });
 
 function JoinDraft() {
+  const navigate = useNavigate();
   const search = Route.useSearch();
   const [error, setError] = createSignal("");
   const [draftId, setDraftId] = createSignal<string | undefined>(search().id);
   const [draftIdInput, setDraftIdInput] = createSignal(search().id || "");
+  const [teamName, setTeamName] = createSignal("");
+
+  const { mutate: joinDraft } = useMutation(api.drafts.joinDraft);
 
   // Update draftIdInput when draftId changes
   createEffect(() => {
@@ -24,19 +31,18 @@ function JoinDraft() {
     }
   });
 
-  const handleLoadDraft = (e: Event) => {
+  const handleLoadDraft = async (e: Event) => {
     e.preventDefault();
     const id = draftIdInput().trim();
+    const name = teamName().trim();
+
     if (id) {
-      setDraftId(id);
-      setError("");
+      await joinDraft({ draftId: id as Id<"drafts">, teamName: name })
+      return navigate({ to: "/draft/$id/pre", params: { id } });
     } else {
       setError("Please enter a draft ID");
     }
   };
-
-
-
 
 
   return (
@@ -70,7 +76,27 @@ function JoinDraft() {
 
             {/* Draft ID Input - Always visible */}
             <form onSubmit={handleLoadDraft} class="mb-6">
+
               <div class="bg-slate-900/50 rounded-lg p-6 border border-slate-600">
+                <label
+                  for="draft-id-input"
+                  class="block text-sm font-medium text-slate-200 mb-3"
+                >
+                  Team Name
+                </label>
+
+                <input
+                  id="draft-id-input"
+                  type="text"
+                  value={teamName()}
+                  onInput={(e) => setTeamName(e.currentTarget.value)}
+                  placeholder="Team Name"
+                  class="w-full flex-1 px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all font-mono text-sm"
+                  required
+                />
+
+                <br /> <br />
+
                 <label
                   for="draft-id-input"
                   class="block text-sm font-medium text-slate-200 mb-3"
@@ -91,9 +117,10 @@ function JoinDraft() {
                     type="submit"
                     class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors shadow-lg shadow-purple-500/30 whitespace-nowrap"
                   >
-                    Load Draft
+                    Join
                   </button>
                 </div>
+
                 <p class="text-sm text-slate-400 mt-2">
                   Get the draft ID from the person who created the draft
                 </p>
@@ -130,8 +157,8 @@ function JoinDraft() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 

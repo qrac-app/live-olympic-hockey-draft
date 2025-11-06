@@ -147,16 +147,6 @@ function CreateDraft() {
               </div>
             </form>
           </div>
-
-          {/* Info Card */}
-          <div class="mt-6 bg-blue-900/20 border border-blue-700/30 rounded-lg p-4">
-            <h3 class="text-blue-300 font-semibold mb-2">What happens next?</h3>
-            <ul class="text-slate-300 text-sm space-y-1">
-              <li>• You'll receive a shareable link to invite participants</li>
-              <li>• Set the draft order before the draft begins</li>
-              <li>• All participants can join before the start time</li>
-            </ul>
-          </div>
         </div>
       </div>
     </div>
