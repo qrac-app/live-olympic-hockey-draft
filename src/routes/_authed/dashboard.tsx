@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/solid-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/solid-router";
 import { createEffect, createSignal } from "solid-js";
 import { authClient } from "~/lib/auth-client";
 import { Button } from "~/components/ui/button";
@@ -36,7 +36,7 @@ function Dashboard() {
       <header class="bg-white/10 backdrop-blur-md border-b border-white/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between items-center h-16">
-            <div class="flex items-center gap-3">
+            <Link href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <div class="p-2 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg">
                 <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                   {/* Hockey puck icon */}
@@ -47,7 +47,7 @@ function Dashboard() {
                 </svg>
               </div>
               <h1 class="text-xl font-bold text-white">Live Olympic Hockey Draft</h1>
-            </div>
+            </Link>
             <div class="flex items-center gap-4">
               <div class="text-right hidden sm:block">
                 <p class="text-sm font-medium text-white">{session().data?.user?.name}</p>

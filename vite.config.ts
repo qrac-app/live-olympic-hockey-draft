@@ -17,4 +17,13 @@ export default defineConfig({
     tanstackStart(),
     solidPlugin({ ssr: true }),
   ],
+  ssr: {
+    noExternal: ['better-auth', '@convex-dev/better-auth'],
+  },
+  optimizeDeps: {
+    exclude: ['better-auth', '@convex-dev/better-auth'],
+  },
+  resolve: {
+    conditions: ['solid', 'browser'],
+  },
 })
