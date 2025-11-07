@@ -230,11 +230,6 @@ export const finishDraft = mutation({
       throw new Error("Only the host can finish the draft");
     }
 
-    // Check if draft is in DURING status
-    if (draft.status !== "DURING") {
-      throw new Error("Draft is not in during status");
-    }
-
     // Update draft status to POST
     await ctx.db.patch(args.draftId, {
       status: "POST",

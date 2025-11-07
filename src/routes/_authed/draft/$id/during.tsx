@@ -25,28 +25,19 @@ export const Route = createFileRoute("/_authed/draft/$id/during")({
 
 function DuringDraft() {
   const params = Route.useParams();
-  const id = () => params().id;
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = createSignal("");
-  const [selectedPlayer, setSelectedPlayer] =
-    createSignal<Id<"draftablePlayers"> | null>(null);
 
   const session = authClient.useSession();
-  const draftId = id() as Id<"drafts">;
+  const draftId = params().id as Id<"drafts">;
   const { data: draft } = useQuery(api.drafts.getDraftById, { draftId });
   const { data: currentPickData } = useQuery(api.draftPicks.getCurrentPick, {
-    draftId,
-  });
-  const { data: availablePlayers } = useQuery(api.draftPicks.getAvailablePlayers, {
     draftId,
   });
 
   const { mutate: finishDraft } = useMutation(api.drafts.finishDraft);
   const { mutate: advancePick } = useMutation(api.draftPicks.advancePick);
-  const { mutate: makePickMutation } = useMutation(api.draftPicks.makePick);
   const [timeRemaining, setTimeRemaining] = createSignal<number>(45);
   const [hasAdvanced, setHasAdvanced] = createSignal<boolean>(false);
-  const [isMakingPick, setIsMakingPick] = createSignal<boolean>(false);
 
   const currentUserId = () => session()?.data?.user?.id;
 
@@ -62,15 +53,24 @@ function DuringDraft() {
     return draftData && draftData.status === "POST";
   });
 
+  const isHost = (): boolean => {
+    const user = session()?.data?.user;
+    return !!(
+      user &&
+      draft?.() &&
+      draft()!.hostBetterAuthUserId &&
+      draft()!.hostBetterAuthUserId === user.id
+    );
+  };
+
   // Countdown timer and auto-advance
   onMount(() => {
     const updateCountdown = async () => {
       // Don't auto-advance if a pick is being made
-      if ((currentPickData?.()?.round ?? 0) >= 7) {
+      if (isHost() && (currentPickData?.()?.round ?? 0) >= 7) {
         await handleFinishDraft();
         return;
       }
-      if (isMakingPick()) return;
 
       const pick = currentPickData?.();
       if (pick && pick.startTime) {
@@ -108,53 +108,15 @@ function DuringDraft() {
     }
   });
 
-  const makePick = async () => {
-    const playerId = selectedPlayer();
-    if (!playerId) return;
-
-    // Prevent multiple simultaneous picks
-    if (isMakingPick()) {
-      return;
-    }
-
-    setIsMakingPick(true);
-    try {
-      await makePickMutation({
-        draftId,
-        playerId,
-      });
-      setSelectedPlayer(null);
-      // Reset advance flag since we just made a pick
-      setHasAdvanced(false);
-    } catch (err) {
-      console.error("Failed to make pick:", err);
-      alert(err instanceof Error ? err.message : "Failed to make pick");
-    } finally {
-      setIsMakingPick(false);
-    }
-  };
-
-  // Filter players by search query
-  const filteredPlayers = () => {
-    const players = availablePlayers?.() || [];
-    const query = searchQuery().toLowerCase();
-    if (!query) return players;
-    return players.filter(
-      (player) =>
-        player.name.toLowerCase().includes(query) ||
-        player.position.toLowerCase().includes(query)
-    );
-  };
-
   const handleFinishDraft = async () => {
-    await finishDraft({ draftId: id() as Id<"drafts"> });
-    navigate({ to: "/draft/$id/post", params: { id: id() } });
+    await finishDraft({ draftId: params().id as Id<"drafts"> });
+    navigate({ to: "/draft/$id/post", params: { id: params().id } });
   };
 
   // Redirect component that handles navigation to post page
   const RedirectToPost = () => {
     onMount(() => {
-      navigate({ to: "/draft/$id/post", params: { id: id() } });
+      navigate({ to: "/draft/$id/post", params: { id: params().id } });
     });
     return null;
   };
@@ -192,13 +154,7 @@ function DuringDraft() {
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <PlayerSelection
                 isMyTurn={isMyTurn()}
-                searchQuery={searchQuery}
-                onSearchInput={setSearchQuery}
-                filteredPlayers={filteredPlayers}
-                selectedPlayer={selectedPlayer}
-                onSelectPlayer={setSelectedPlayer}
-                isMakingPick={isMakingPick}
-                onMakePick={makePick}
+                draftId={draftId}
               />
 
               <div class="space-y-6">

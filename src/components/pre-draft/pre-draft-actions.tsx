@@ -80,7 +80,7 @@ export default function PreDraftActions(props: PreDraftActionsProps) {
               isStarting() ||
               (props.timeRemaining !== null && props.timeRemaining > 0)
             }
-            class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium shadow-lg shadow-green-500/30"
+            class="cursor-pointer flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium shadow-lg shadow-green-500/30"
           >
             {isStarting()
               ? "Starting..."
