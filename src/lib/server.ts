@@ -27,7 +27,9 @@ export const fetchUser = createServerFn({ method: "GET" }).handler(async () => {
     const user = await fetchQuery(api.auth.getCurrentUser, {});
     return user;
   } catch (error) {
-    throw redirect({ to: "/" });
+    const request = getRequest();
+    const { pathname, search } = new URL(request.url);
+    throw redirect({ to: "/", search: { redirect: pathname + search } });
   }
 });
 
@@ -37,7 +39,9 @@ export const fetchUserDrafts = createServerFn({ method: "GET" }).handler(
       const drafts = await fetchQuery(api.drafts.getUserDrafts, {});
       return drafts;
     } catch (error) {
-      throw redirect({ to: "/" });
+      const request = getRequest();
+      const { pathname, search } = new URL(request.url);
+      throw redirect({ to: "/", search: { redirect: pathname + search } });
     }
   }
 );

@@ -6,7 +6,6 @@ export default defineSchema({
         name: v.string(),
         startDatetime: v.number(), // Unix timestamp in milliseconds
         hostBetterAuthUserId: v.optional(v.string()),
-        hostUserId: v.optional(v.string()), // Legacy field for backward compatibility
         status: v.union(
             v.literal("PRE"),
             v.literal("DURING"),

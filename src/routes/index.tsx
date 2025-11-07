@@ -4,9 +4,15 @@ import { SignIn } from "~/components/sign-in";
 import { SignUp } from "~/components/sign-up";
 
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      redirect: (search.redirect as string) || undefined,
+    };
+  },
   beforeLoad: async (ctx) => {
     if (ctx.context.token && ctx.context.session) {
-      throw redirect({ to: "/dashboard" });
+      const redirectTo = ctx.search.redirect || "/dashboard";
+      throw redirect({ to: redirectTo as any });
     }
   },
   component: App,
@@ -14,6 +20,8 @@ export const Route = createFileRoute("/")({
 
 function App() {
   const [isSignUp, setIsSignUp] = createSignal(false);
+  const search = Route.useSearch();
+  const redirectTo = () => search().redirect || "/dashboard";
 
   return (
     <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800 flex items-center justify-center p-4">
@@ -51,8 +59,8 @@ function App() {
           </div>
 
           {/* Form */}
-          <Show when={isSignUp()} fallback={<SignIn />}>
-            <SignUp />
+          <Show when={isSignUp()} fallback={<SignIn redirectTo={redirectTo()} />}>
+            <SignUp redirectTo={redirectTo()} />
           </Show>
 
           {/* Toggle between sign in/sign up */}

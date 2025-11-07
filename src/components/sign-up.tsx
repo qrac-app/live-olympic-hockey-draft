@@ -3,7 +3,11 @@ import { useNavigate } from "@tanstack/solid-router";
 import { authClient } from "~/lib/auth-client";
 import { Button } from "~/components/ui/button";
 
-export function SignUp() {
+interface SignUpProps {
+    redirectTo?: string;
+}
+
+export function SignUp(props: SignUpProps) {
     const navigate = useNavigate();
     const [name, setName] = createSignal("");
     const [email, setEmail] = createSignal("");
@@ -34,7 +38,8 @@ export function SignUp() {
                 return;
             }
 
-            navigate({ to: "/dashboard" });
+            const redirectPath = props.redirectTo || "/dashboard";
+            navigate({ to: redirectPath as any });
         } catch (err: any) {
             setError("Sign up failed. Please try again.");
             console.error("Sign up error:", err);

@@ -12,7 +12,7 @@ export function Header() {
     setIsSigningOut(true);
     try {
       await authClient.signOut();
-      navigate({ to: "/" });
+      navigate({ to: "/", search: { redirect: window.location.pathname + window.location.search } });
     } catch (err) {
       console.error("Sign out error:", err);
       setIsSigningOut(false);
