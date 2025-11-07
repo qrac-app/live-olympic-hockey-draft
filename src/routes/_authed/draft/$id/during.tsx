@@ -18,6 +18,7 @@ import { YourTurnBanner } from "~/components/during-draft/your-turn-banner";
 import { PlayerSelection } from "~/components/during-draft/player-selection";
 import { RecentPicks } from "~/components/during-draft/recent-picks";
 import { DraftStats } from "~/components/during-draft/draft-stats";
+import { Navigate } from "@tanstack/solid-router";
 
 export const Route = createFileRoute("/_authed/draft/$id/during")({
   component: DuringDraft,
@@ -47,11 +48,6 @@ function DuringDraft() {
     return !!(pick && userId && pick.team.betterAuthUserId === userId);
   };
 
-  // Redirect to post page if draft is complete
-  const shouldRedirectToPost = createMemo(() => {
-    const draftData = draft?.();
-    return draftData && draftData.status === "POST";
-  });
 
   const isHost = (): boolean => {
     const user = session()?.data?.user;
@@ -113,58 +109,45 @@ function DuringDraft() {
     navigate({ to: "/draft/$id/post", params: { id: params().id } });
   };
 
-  // Redirect component that handles navigation to post page
-  const RedirectToPost = () => {
-    onMount(() => {
-      navigate({ to: "/draft/$id/post", params: { id: params().id } });
-    });
-    return null;
-  };
-
   return (
-    <>
-      <Show when={shouldRedirectToPost()}>
-        <RedirectToPost />
-      </Show>
-      <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800">
-        <Header />
-        <div class="p-6">
-          <div class="max-w-7xl mx-auto">
-            <DraftHeader
-              draftName={draft?.()?.name}
+    <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800">
+      <Header />
+      <div class="p-6">
+        <div class="max-w-7xl mx-auto">
+          <DraftHeader
+            draftName={draft?.()?.name}
+            currentPickData={() => {
+              const pick = currentPickData?.();
+              return pick ? { round: pick.round, pickNumber: pick.pickNumber } : undefined;
+            }}
+          />
+
+          <div class="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-6 mb-6">
+            <OnTheClock
               currentPickData={() => {
                 const pick = currentPickData?.();
-                return pick ? { round: pick.round, pickNumber: pick.pickNumber } : undefined;
+                return pick ? { team: { teamName: pick.team.teamName }, pickNumber: pick.pickNumber } : undefined;
               }}
+              isMyTurn={isMyTurn()}
+              timeRemaining={timeRemaining()}
             />
 
-            <div class="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-6 mb-6">
-              <OnTheClock
-                currentPickData={() => {
-                  const pick = currentPickData?.();
-                  return pick ? { team: { teamName: pick.team.teamName }, pickNumber: pick.pickNumber } : undefined;
-                }}
-                isMyTurn={isMyTurn()}
-                timeRemaining={timeRemaining()}
-              />
+            <YourTurnBanner isMyTurn={isMyTurn()} timeRemaining={timeRemaining()} />
+          </div>
 
-              <YourTurnBanner isMyTurn={isMyTurn()} timeRemaining={timeRemaining()} />
-            </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <PlayerSelection
+              isMyTurn={isMyTurn()}
+              draftId={draftId}
+            />
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <PlayerSelection
-                isMyTurn={isMyTurn()}
-                draftId={draftId}
-              />
-
-              <div class="space-y-6">
-                <RecentPicks draftId={draftId} />
-                <DraftStats draftId={draftId} />
-              </div>
+            <div class="space-y-6">
+              <RecentPicks draftId={draftId} />
+              <DraftStats draftId={draftId} />
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

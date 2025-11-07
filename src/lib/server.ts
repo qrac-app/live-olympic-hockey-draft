@@ -6,8 +6,6 @@ import { createServerFn } from "@tanstack/solid-start";
 import { getCookie, getRequest } from "@tanstack/solid-start/server";
 import { fetchQuery } from "./auth-server";
 import { api } from "convex/_generated/api";
-import type { Id } from "convex/_generated/dataModel";
-import { v } from "convex/values";
 
 // Get auth information for SSR using available cookies
 export const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {

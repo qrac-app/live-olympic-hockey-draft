@@ -36,7 +36,6 @@ function JoinDraft() {
     }
   };
 
-
   return (
     <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800">
       <Header />
