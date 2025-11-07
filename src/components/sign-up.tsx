@@ -2,6 +2,7 @@ import { createSignal, Show } from "solid-js";
 import { useNavigate } from "@tanstack/solid-router";
 import { authClient } from "~/lib/auth-client";
 import { Button } from "~/components/ui/button";
+import { refreshAuth } from "~/lib/convex-client";
 
 interface SignUpProps {
     redirectTo?: string;
@@ -32,6 +33,8 @@ export function SignUp(props: SignUpProps) {
                 password: password(),
                 name: name(),
             });
+
+            refreshAuth();
 
             if (res.error) {
                 setError(res.error.message || "Unable to create account");

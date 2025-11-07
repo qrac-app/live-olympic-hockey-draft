@@ -14,6 +14,9 @@ import { fetchAuth } from "~/lib/server.ts";
 
 export const Route = createRootRouteWithContext()({
   head: () => ({
+    meta: [{
+      title: 'Live Olympic Hockey Draft',
+    }],
     links: [{ rel: "stylesheet", href: styleCss }],
   }),
   beforeLoad: async () => {

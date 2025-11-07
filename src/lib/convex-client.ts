@@ -10,11 +10,15 @@ if (!CONVEX_URL) {
 export const convexClient = setupConvex(CONVEX_URL);
 
 // Configure auth token fetcher
-convexClient.setAuth(async () => {
-  const auth = await convexClient.getAuth();
-  if (!auth) {
-    const { token } = await fetchAuth();
-    return token;
-  }
-  return auth.token;
-});
+export function refreshAuth() {
+  convexClient.setAuth(async () => {
+    const auth = await convexClient.getAuth();
+    if (!auth) {
+      const { token } = await fetchAuth();
+      return token;
+    }
+    return auth.token;
+  });
+}
+
+refreshAuth();

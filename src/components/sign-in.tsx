@@ -2,6 +2,7 @@ import { createSignal, Show } from "solid-js";
 import { useNavigate } from "@tanstack/solid-router";
 import { authClient } from "~/lib/auth-client";
 import { Button } from "~/components/ui/button";
+import { refreshAuth } from "~/lib/convex-client";
 
 interface SignInProps {
     redirectTo?: string;
@@ -30,6 +31,8 @@ export function SignIn(props: SignInProps) {
                 email: email(),
                 password: password(),
             });
+
+            refreshAuth();
 
             if (res.error) {
                 setError("Invalid email or password");
