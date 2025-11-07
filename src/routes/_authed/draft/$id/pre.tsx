@@ -157,7 +157,6 @@ function PreDraft() {
 
     try {
       await startDraft({ draftId });
-      // Navigate immediately - the createEffect will also handle this as a backup
       navigate({ to: "/draft/$id/during", params: { id: draftId } });
     } catch (err) {
       console.error("Failed to start draft:", err);
@@ -314,9 +313,8 @@ function PreDraft() {
                       });
                       return (
                         <div
-                          class={`flex items-center justify-between p-4 rounded-lg border ${"bg-slate-900/50 border-slate-600"} ${
-                            isCurrentUser() ? "ring-2 ring-green-500/50" : ""
-                          }`}
+                          class={`flex items-center justify-between p-4 rounded-lg border ${"bg-slate-900/50 border-slate-600"} ${isCurrentUser() ? "ring-2 ring-green-500/50" : ""
+                            }`}
                         >
                           <div class="flex items-center gap-4">
                             <div class="w-10 h-10 flex items-center justify-center bg-slate-700 rounded-full text-white font-bold">
@@ -391,8 +389,8 @@ function PreDraft() {
                   {isStarting()
                     ? "Starting..."
                     : timeRemaining() !== null && timeRemaining()! > 0
-                    ? `Start Draft (${formatTimeRemaining(timeRemaining()!)})`
-                    : "Start Draft →"}
+                      ? `Start Draft (${formatTimeRemaining(timeRemaining()!)})`
+                      : "Start Draft →"}
                 </button>
               </Show>
               <Show when={!isHost()}>

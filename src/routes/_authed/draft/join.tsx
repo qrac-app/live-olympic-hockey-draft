@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/solid-router";
 import { useMutation } from "convex-solidjs";
 import { api } from "convex/_generated/api";
 import type { Id } from "convex/_generated/dataModel";
-import { createSignal, Show, createEffect } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import { Header } from "~/components/header";
 
 export const Route = createFileRoute("/_authed/draft/join")({
@@ -18,18 +18,10 @@ function JoinDraft() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const [error, setError] = createSignal("");
-  const [draftId, setDraftId] = createSignal<string | undefined>(search().id);
   const [draftIdInput, setDraftIdInput] = createSignal(search().id || "");
   const [teamName, setTeamName] = createSignal("");
 
   const { mutate: joinDraft } = useMutation(api.drafts.joinDraft);
-
-  // Update draftIdInput when draftId changes
-  createEffect(() => {
-    if (draftId()) {
-      setDraftIdInput(draftId() || "");
-    }
-  });
 
   const handleLoadDraft = async (e: Event) => {
     e.preventDefault();
