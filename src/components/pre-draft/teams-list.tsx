@@ -1,5 +1,8 @@
 import { For, Show, createMemo } from "solid-js";
 import TeamItem from "./team-item";
+import { useQuery } from "convex-solidjs";
+import { api } from "convex/_generated/api";
+import type { Id } from "convex/_generated/dataModel";
 
 export type Team = {
   draftOrderNumber: number;
@@ -10,10 +13,14 @@ export type Team = {
 export type TeamsListProps = {
   teams: Team[] | undefined;
   currentUserId: string | undefined;
-  onlineUsers: string[] | undefined;
+  draftId: Id<"drafts">;
 };
 
 export default function TeamsList(props: TeamsListProps) {
+  const { data: onlineUsers } = useQuery(api.draftPresence.getOnlineUsers, {
+    draftId: props.draftId,
+  });
+
   return (
     <div class="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-8 mb-6">
       <h2 class="text-2xl font-bold text-white mb-6">
@@ -29,20 +36,13 @@ export default function TeamsList(props: TeamsListProps) {
       >
         <div class="space-y-3">
           <For each={props.teams || []}>
-            {(team) => {
-              const isOnline = createMemo(() => {
-                return props.onlineUsers
-                  ? props.onlineUsers.includes(team.betterAuthUserId)
-                  : false;
-              });
-              return (
-                <TeamItem
-                  team={team}
-                  currentUserId={props.currentUserId}
-                  isOnline={isOnline()}
-                />
-              );
-            }}
+            {(team) => (
+              <TeamItem
+                team={team}
+                currentUserId={props.currentUserId}
+                isOnline={onlineUsers()?.includes(team.betterAuthUserId) ?? false}
+              />
+            )}
           </For>
         </div>
       </Show>

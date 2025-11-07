@@ -1,4 +1,4 @@
-import { createFileRoute, Navigate, useNavigate } from "@tanstack/solid-router";
+import { createFileRoute, Navigate } from "@tanstack/solid-router";
 import {
   createSignal,
   Show,
@@ -11,13 +11,11 @@ import { api } from "../../../../../convex/_generated/api";
 import { authClient } from "~/lib/auth-client";
 import type { Id } from "../../../../../convex/_generated/dataModel";
 import { Header } from "~/components/header";
-import { formatTimeRemaining } from "~/lib/utils";
 import DraftHeader from "~/components/pre-draft/draft-header";
 import CountdownTimer from "~/components/pre-draft/countdown-timer";
 import ShareLink from "~/components/pre-draft/share-link";
 import TeamsList from "~/components/pre-draft/teams-list";
 import PreDraftActions from "~/components/pre-draft/pre-draft-actions";
-import ErrorMessage from "~/components/error-message";
 
 export const Route = createFileRoute("/_authed/draft/$id/pre")({
   component: PreDraft,
@@ -25,24 +23,16 @@ export const Route = createFileRoute("/_authed/draft/$id/pre")({
 
 function PreDraft() {
   const params = Route.useParams();
-  const navigate = useNavigate();
   const [timeRemaining, setTimeRemaining] = createSignal<number | null>(null);
-
-
   const draftId = params().id as Id<"drafts">;
   const session = authClient.useSession();
 
-  // Fetch draft data
+  // queries
   const { data: draft } = useQuery(api.drafts.getDraftById, { draftId });
   const { data: teams } = useQuery(api.draftTeams.getDraftTeams, { draftId });
-  const { data: onlineUsers } = useQuery(api.draftPresence.getOnlineUsers, {
-    draftId,
-  });
 
-  // Start draft mutation
+  // mutations
   const { mutate: heartbeat } = useMutation(api.draftPresence.heartbeat);
-
-  const currentUserId = () => session()?.data?.user?.id;
 
   // Check if current user is host
   const isHost = (): boolean => {
@@ -57,7 +47,7 @@ function PreDraft() {
 
   // Check if current user is part of the draft
   const isPartOfDraft = createMemo(() => {
-    const userId = currentUserId();
+    const userId = session()?.data?.user?.id;
     if (!userId || !teams?.()) return false;
     return teams()!.some((team) => team.betterAuthUserId === userId);
   });
@@ -110,10 +100,8 @@ function PreDraft() {
     onCleanup(() => {
       clearInterval(interval);
       clearInterval(presenceInterval);
-      // No need to manually remove - auto-cleanup handles it
     });
   });
-
 
   return (
     <>
@@ -145,14 +133,13 @@ function PreDraft() {
 
                 <TeamsList
                   teams={teams?.()}
-                  currentUserId={currentUserId()}
-                  onlineUsers={onlineUsers?.()}
+                  currentUserId={session()?.data?.user?.id}
+                  draftId={draftId}
                 />
 
                 <PreDraftActions
                   isHost={isHost()}
                   timeRemaining={timeRemaining()}
-                  onBackToDashboard={() => navigate({ to: "/dashboard" })}
                   draftId={draftId}
                 />
               </Show>

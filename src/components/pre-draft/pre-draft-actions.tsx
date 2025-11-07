@@ -9,7 +9,6 @@ import ErrorMessage from "../error-message";
 export type PreDraftActionsProps = {
   isHost: boolean;
   timeRemaining: number | null;
-  onBackToDashboard: () => void;
   draftId: Id<"drafts">;
 };
 
@@ -17,7 +16,6 @@ export default function PreDraftActions(props: PreDraftActionsProps) {
   const navigate = useNavigate();
   const [isStarting, setIsStarting] = createSignal(false);
   const [error, setError] = createSignal("");
-
 
   const { mutate: startDraft } = useMutation(api.drafts.startDraft);
   const { mutate: randomizeDraftTeams } = useMutation(
@@ -64,7 +62,7 @@ export default function PreDraftActions(props: PreDraftActionsProps) {
 
       <div class="flex gap-4">
         <button
-          onClick={props.onBackToDashboard}
+          onClick={() => navigate({ to: "/dashboard" })}
           class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium"
         >
           Back to Dashboard
