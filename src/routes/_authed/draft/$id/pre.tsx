@@ -55,6 +55,12 @@ function PreDraft() {
     );
   };
 
+  createEffect(() => {
+    if (!isHost() && draft?.() && draft()!.status === "DURING") {
+      navigate({ to: "/draft/$id/during", params: { id: draftId } });
+    }
+  });
+
   // Countdown timer
   onMount(() => {
     const updateCountdown = () => {

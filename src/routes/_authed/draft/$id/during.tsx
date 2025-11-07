@@ -74,8 +74,12 @@ function DuringDraft() {
 
   // Countdown timer and auto-advance
   onMount(() => {
-    const updateCountdown = () => {
+    const updateCountdown = async () => {
       // Don't auto-advance if a pick is being made
+      if ((currentPickData?.()?.round ?? 0) >= 6) {
+        await handleFinishDraft();
+        return;
+      }
       if (isMakingPick()) return;
 
       const pick = currentPickData?.();
@@ -440,7 +444,7 @@ function DuringDraft() {
               </div>
 
               {/* Admin Actions (for host only) */}
-              <Show when={isHost() && currentPickData?.()?.round === 12}>
+              <Show when={isHost() && (currentPickData?.()?.round ?? 0) >= 6}>
                 <button
                   onClick={handleFinishDraft}
                   class="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium"
