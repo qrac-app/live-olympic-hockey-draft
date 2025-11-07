@@ -111,6 +111,9 @@ function PreDraft() {
       <Show when={shouldRedirect()}>
         <Navigate to="/draft/$id/during" params={{ id: draftId }} />
       </Show>
+      <Show when={draft?.() && draft()!.status === "POST"}>
+        <Navigate to="/draft/$id/post" params={{ id: params().id }} />
+      </Show>
       <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800">
         <Header />
 

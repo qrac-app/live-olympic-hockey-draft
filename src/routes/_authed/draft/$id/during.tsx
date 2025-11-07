@@ -111,6 +111,9 @@ function DuringDraft() {
 
   return (
     <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800">
+      <Show when={draft?.() && draft()!.status === "POST"}>
+        <Navigate to="/draft/$id/post" params={{ id: params().id }} />
+      </Show>
       <Header />
       <div class="p-6">
         <div class="max-w-7xl mx-auto">
