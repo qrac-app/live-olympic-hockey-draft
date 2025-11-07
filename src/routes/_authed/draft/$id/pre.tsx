@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/solid-router";
+import { createFileRoute, Navigate, useNavigate } from "@tanstack/solid-router";
 import {
   createSignal,
   Show,
@@ -27,8 +27,7 @@ function PreDraft() {
   const params = Route.useParams();
   const navigate = useNavigate();
   const [timeRemaining, setTimeRemaining] = createSignal<number | null>(null);
-  const [isStarting, setIsStarting] = createSignal(false);
-  const [error, setError] = createSignal("");
+
 
   const draftId = params().id as Id<"drafts">;
   const session = authClient.useSession();
@@ -41,11 +40,7 @@ function PreDraft() {
   });
 
   // Start draft mutation
-  const { mutate: startDraft } = useMutation(api.drafts.startDraft);
   const { mutate: heartbeat } = useMutation(api.draftPresence.heartbeat);
-  const { mutate: randomizeDraftTeams } = useMutation(
-    api.draftTeams.randomizeDraftTeams
-  );
 
   const currentUserId = () => session()?.data?.user?.id;
 
@@ -119,67 +114,14 @@ function PreDraft() {
     });
   });
 
-  const handleRandomizeDraftTeams = async () => {
-    if (!isHost()) {
-      setError("Only the host can randomize the draft");
-      return;
-    }
-    await randomizeDraftTeams({ draftId });
-  };
-
-  const handleStartDraft = async () => {
-    if (!isHost()) {
-      setError("Only the host can start the draft");
-      return;
-    }
-
-    const remaining = timeRemaining();
-    if (remaining !== null && remaining > 0) {
-      setError("Cannot start draft before the scheduled start time");
-      return;
-    }
-
-    setIsStarting(true);
-    setError("");
-
-    try {
-      await startDraft({ draftId });
-      navigate({ to: "/draft/$id/during", params: { id: draftId } });
-    } catch (err) {
-      console.error("Failed to start draft:", err);
-      setError(err instanceof Error ? err.message : "Failed to start draft");
-      setIsStarting(false);
-    }
-  };
-
-  const getShareLink = () => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "";
-    return `${origin}/draft/join?id=${draftId}`;
-  };
-
-  // Redirect component that handles navigation to join page
-  const RedirectToJoin = () => {
-    onMount(() => {
-      navigate({ to: "/draft/join", search: { id: draftId } });
-    });
-    return null;
-  };
-
-  // Redirect component that handles navigation to during page
-  const RedirectToDuring = () => {
-    onMount(() => {
-      navigate({ to: "/draft/$id/during", params: { id: draftId } });
-    });
-    return null;
-  };
 
   return (
     <>
       <Show when={shouldRedirectToJoin()}>
-        <RedirectToJoin />
+        <Navigate to="/draft/join" search={{ id: draftId }} />
       </Show>
       <Show when={shouldRedirect()}>
-        <RedirectToDuring />
+        <Navigate to="/draft/$id/during" params={{ id: draftId }} />
       </Show>
       <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800">
         <Header />
@@ -197,14 +139,9 @@ function PreDraft() {
                     draft={draft()!}
                     teamCount={teams()!.length}
                   />
-                  <CountdownTimer
-                    timeRemaining={timeRemaining()}
-                    formatTimeRemaining={formatTimeRemaining}
-                  />
-                  <ShareLink shareLink={getShareLink()} />
+                  <CountdownTimer timeRemaining={timeRemaining()} />
+                  <ShareLink draftId={draftId} />
                 </Show>
-
-                <ErrorMessage error={error()} />
 
                 <TeamsList
                   teams={teams?.()}
@@ -214,12 +151,9 @@ function PreDraft() {
 
                 <PreDraftActions
                   isHost={isHost()}
-                  isStarting={isStarting()}
                   timeRemaining={timeRemaining()}
-                  formatTimeRemaining={formatTimeRemaining}
                   onBackToDashboard={() => navigate({ to: "/dashboard" })}
-                  onRandomize={handleRandomizeDraftTeams}
-                  onStartDraft={handleStartDraft}
+                  draftId={draftId}
                 />
               </Show>
             </div>

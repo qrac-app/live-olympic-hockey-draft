@@ -1,6 +1,7 @@
+import { formatTimeRemaining } from "~/lib/utils";
+
 export type CountdownTimerProps = {
   timeRemaining: number | null;
-  formatTimeRemaining: (ms: number) => string;
 };
 
 export default function CountdownTimer(props: CountdownTimerProps) {
@@ -13,7 +14,7 @@ export default function CountdownTimer(props: CountdownTimerProps) {
           </p>
           <p class="text-3xl font-bold text-white">
             {props.timeRemaining !== null
-              ? props.formatTimeRemaining(props.timeRemaining)
+              ? formatTimeRemaining(props.timeRemaining)
               : "Loading..."}
           </p>
         </div>

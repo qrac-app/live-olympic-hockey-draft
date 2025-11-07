@@ -1,15 +1,21 @@
 import { Show, createSignal, onCleanup } from "solid-js";
 
 export type ShareLinkProps = {
-  shareLink: string;
+  draftId: string;
 };
 
 export default function ShareLink(props: ShareLinkProps) {
   const [copySuccess, setCopySuccess] = createSignal(false);
 
+  const getShareLink = () => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    return `${origin}/draft/join?id=${props.draftId}`;
+  };
+
+
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(props.shareLink);
+      await navigator.clipboard.writeText(getShareLink());
       setCopySuccess(true);
       const timeout = setTimeout(() => setCopySuccess(false), 2000);
       onCleanup(() => clearTimeout(timeout));
@@ -28,7 +34,7 @@ export default function ShareLink(props: ShareLinkProps) {
           <div class="flex items-center gap-2 bg-slate-900/50 rounded-lg p-3 border border-slate-600">
             <input
               type="text"
-              value={props.shareLink}
+              value={getShareLink()}
               readonly
               class="flex-1 bg-transparent text-white text-sm focus:outline-none cursor-text"
             />
