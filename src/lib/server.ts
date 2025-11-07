@@ -6,6 +6,8 @@ import { createServerFn } from "@tanstack/solid-start";
 import { getCookie, getRequest } from "@tanstack/solid-start/server";
 import { fetchQuery } from "./auth-server";
 import { api } from "convex/_generated/api";
+import type { Id } from "convex/_generated/dataModel";
+import { v } from "convex/values";
 
 // Get auth information for SSR using available cookies
 export const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {
@@ -31,3 +33,19 @@ export const fetchUserDrafts = createServerFn({ method: "GET" }).handler(
     return drafts;
   }
 );
+
+export const fetchDraftPostData = createServerFn({ method: "GET" })
+  .inputValidator((d: any) => d)
+  .handler(
+    async (ctx) => {
+      const draftPromise = fetchQuery(api.drafts.getDraftById, { draftId: ctx.data.draftId });
+      const teamsWithRostersPromise = fetchQuery(api.draftPicks.getDraftRosters, {
+        draftId: ctx.data.draftId,
+      });
+      const draftStatsPromise = fetchQuery(api.draftPicks.getDraftStats, { draftId: ctx.data.draftId });
+
+      const [draft, teamsWithRosters, draftStats] = await Promise.all([draftPromise, teamsWithRostersPromise, draftStatsPromise]);
+      return { draft, teamsWithRosters, draftStats };
+    }
+  );
+
