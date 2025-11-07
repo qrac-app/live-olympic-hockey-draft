@@ -54,8 +54,6 @@ function PostDraft() {
 
   const calculateDuration = () => {
     if (!draft?.()) return "N/A";
-    // Use startDatetime as the draft start time
-    const startTime = draft()!.startDatetime;
     // For completed drafts, estimate duration based on picks made
     // In a real scenario, you'd store an endTime when the draft finishes
     const stats = draftStats?.();
@@ -120,7 +118,7 @@ function PostDraft() {
                         <p class="text-2xl font-bold text-white">
                           {Math.ceil(
                             stats().maxPicks /
-                              (teamsWithRosters?.()?.length || 1)
+                            (teamsWithRosters?.()?.length || 1)
                           )}
                         </p>
                       </div>
@@ -165,15 +163,14 @@ function PostDraft() {
                       return (
                         <button
                           onClick={() => setSelectedTeamId(team.teamId)}
-                          class={`w-full text-left p-4 rounded-lg border transition-all ${
-                            selectedTeamId() === team.teamId
-                              ? isUserTeam
-                                ? "bg-blue-600/30 border-blue-500"
-                                : "bg-indigo-600/20 border-indigo-500"
-                              : isUserTeam
+                          class={`w-full text-left p-4 rounded-lg border transition-all ${selectedTeamId() === team.teamId
+                            ? isUserTeam
+                              ? "bg-blue-600/30 border-blue-500"
+                              : "bg-indigo-600/20 border-indigo-500"
+                            : isUserTeam
                               ? "bg-blue-600/10 border-blue-600/50 hover:bg-blue-600/20"
                               : "bg-slate-900/50 border-slate-600 hover:bg-slate-900/80"
-                          }`}
+                            }`}
                         >
                           <div class="flex items-center justify-between">
                             <div>

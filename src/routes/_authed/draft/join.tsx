@@ -23,7 +23,7 @@ function JoinDraft() {
 
   const { mutate: joinDraft } = useMutation(api.drafts.joinDraft);
 
-  const handleLoadDraft = async (e: Event) => {
+  const handleJoinDraft = async (e: Event) => {
     e.preventDefault();
     const id = draftIdInput().trim();
     const name = teamName().trim();
@@ -67,7 +67,7 @@ function JoinDraft() {
             </div>
 
             {/* Draft ID Input - Always visible */}
-            <form onSubmit={handleLoadDraft} class="mb-6">
+            <form onSubmit={handleJoinDraft} class="mb-6">
 
               <div class="bg-slate-900/50 rounded-lg p-6 border border-slate-600">
                 <label
