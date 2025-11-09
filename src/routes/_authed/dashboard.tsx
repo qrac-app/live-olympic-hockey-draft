@@ -19,7 +19,9 @@ function Dashboard() {
   const context = Route.useRouteContext();
   const loaderData = Route.useLoaderData();
   const drafts = createAsync(() => loaderData().draftsPromise);
-  const user = createAsync(() => context().userPromise);
+  const user = createAsync(() => context().userPromise, {
+    deferStream: true
+  });
 
   return (
     <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800">
@@ -45,14 +47,16 @@ function Dashboard() {
                     />
                   </svg>
                 </div>
-                <div>
-                  <h2 class="text-3xl font-bold text-white">
-                    Welcome back, {user()?.name}!
-                  </h2>
-                  <p class="text-slate-300 mt-1">
-                    Ready to start your Olympic Hockey Draft?
-                  </p>
-                </div>
+                <Suspense>
+                  <div>
+                    <h2 class="text-3xl font-bold text-white">
+                      Welcome back, {user()?.name}!
+                    </h2>
+                    <p class="text-slate-300 mt-1">
+                      Ready to start your Olympic Hockey Draft?
+                    </p>
+                  </div>
+                </Suspense>
               </div>
             </div>
 
