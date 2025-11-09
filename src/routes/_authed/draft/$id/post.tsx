@@ -185,21 +185,43 @@ function PostDraft() {
                         >
                           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <For each={team().forwards}>
-                              {(player) => (
-                                <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
-                                  <div class="flex justify-between items-start mb-1">
-                                    <p class="text-white font-semibold">
-                                      {player.name}
-                                    </p>
-                                    <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded">
-                                      #{player.pickNum}
-                                    </span>
+                              {(player) => {
+                                const [imageError, setImageError] = createSignal(false);
+                                return (
+                                  <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
+                                    <div class="flex items-center gap-3">
+                                      <Show
+                                        when={player.avatar && !imageError()}
+                                        fallback={
+                                          <div class="w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                                            {player.name.charAt(0)}
+                                          </div>
+                                        }
+                                      >
+                                        <img
+                                          src={player.avatar}
+                                          alt={player.name}
+                                          class="w-12 h-12 rounded-full object-cover border-2 border-slate-600 flex-shrink-0"
+                                          onError={() => setImageError(true)}
+                                        />
+                                      </Show>
+                                      <div class="flex-1 min-w-0">
+                                        <div class="flex justify-between items-start mb-1">
+                                          <p class="text-white font-semibold truncate">
+                                            {player.name}
+                                          </p>
+                                          <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded ml-2 flex-shrink-0">
+                                            #{player.pickNum}
+                                          </span>
+                                        </div>
+                                        <p class="text-slate-400 text-sm">
+                                          {player.position}
+                                        </p>
+                                      </div>
+                                    </div>
                                   </div>
-                                  <p class="text-slate-400 text-sm">
-                                    {player.position}
-                                  </p>
-                                </div>
-                              )}
+                                );
+                              }}
                             </For>
                           </div>
                         </Show>
@@ -221,21 +243,43 @@ function PostDraft() {
                         >
                           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <For each={team().defense}>
-                              {(player) => (
-                                <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
-                                  <div class="flex justify-between items-start mb-1">
-                                    <p class="text-white font-semibold">
-                                      {player.name}
-                                    </p>
-                                    <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded">
-                                      #{player.pickNum}
-                                    </span>
+                              {(player) => {
+                                const [imageError, setImageError] = createSignal(false);
+                                return (
+                                  <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
+                                    <div class="flex items-center gap-3">
+                                      <Show
+                                        when={player.avatar && !imageError()}
+                                        fallback={
+                                          <div class="w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                                            {player.name.charAt(0)}
+                                          </div>
+                                        }
+                                      >
+                                        <img
+                                          src={player.avatar}
+                                          alt={player.name}
+                                          class="w-12 h-12 rounded-full object-cover border-2 border-slate-600 flex-shrink-0"
+                                          onError={() => setImageError(true)}
+                                        />
+                                      </Show>
+                                      <div class="flex-1 min-w-0">
+                                        <div class="flex justify-between items-start mb-1">
+                                          <p class="text-white font-semibold truncate">
+                                            {player.name}
+                                          </p>
+                                          <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded ml-2 flex-shrink-0">
+                                            #{player.pickNum}
+                                          </span>
+                                        </div>
+                                        <p class="text-slate-400 text-sm">
+                                          {player.position}
+                                        </p>
+                                      </div>
+                                    </div>
                                   </div>
-                                  <p class="text-slate-400 text-sm">
-                                    {player.position}
-                                  </p>
-                                </div>
-                              )}
+                                );
+                              }}
                             </For>
                           </div>
                         </Show>
@@ -257,21 +301,43 @@ function PostDraft() {
                         >
                           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <For each={team().goalies}>
-                              {(player) => (
-                                <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
-                                  <div class="flex justify-between items-start mb-1">
-                                    <p class="text-white font-semibold">
-                                      {player.name}
-                                    </p>
-                                    <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded">
-                                      #{player.pickNum}
-                                    </span>
+                              {(player) => {
+                                const [imageError, setImageError] = createSignal(false);
+                                return (
+                                  <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-600">
+                                    <div class="flex items-center gap-3">
+                                      <Show
+                                        when={player.avatar && !imageError()}
+                                        fallback={
+                                          <div class="w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                                            {player.name.charAt(0)}
+                                          </div>
+                                        }
+                                      >
+                                        <img
+                                          src={player.avatar}
+                                          alt={player.name}
+                                          class="w-12 h-12 rounded-full object-cover border-2 border-slate-600 flex-shrink-0"
+                                          onError={() => setImageError(true)}
+                                        />
+                                      </Show>
+                                      <div class="flex-1 min-w-0">
+                                        <div class="flex justify-between items-start mb-1">
+                                          <p class="text-white font-semibold truncate">
+                                            {player.name}
+                                          </p>
+                                          <span class="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded ml-2 flex-shrink-0">
+                                            #{player.pickNum}
+                                          </span>
+                                        </div>
+                                        <p class="text-slate-400 text-sm">
+                                          {player.position}
+                                        </p>
+                                      </div>
+                                    </div>
                                   </div>
-                                  <p class="text-slate-400 text-sm">
-                                    {player.position}
-                                  </p>
-                                </div>
-                              )}
+                                );
+                              }}
                             </For>
                           </div>
                         </Show>

@@ -1,4 +1,4 @@
-import { For, Show } from "solid-js";
+import { For, Show, createSignal } from "solid-js";
 import type { Accessor } from "solid-js";
 import type { Id } from "convex/_generated/dataModel";
 
@@ -28,35 +28,47 @@ export function PlayerList(props: PlayerListProps) {
                 }
             >
                 <For each={props.players()}>
-                    {(player) => (
-                        <button
-                            onClick={() => props.onSelectPlayer(player._id)}
-                            disabled={props.isMakingPick()}
-                            class={`w-full flex items-center justify-between p-4 rounded-lg border transition-all ${props.selectedPlayer() === player._id
+                    {(player) => {
+                        const [imageError, setImageError] = createSignal(false);
+                        return (
+                            <button
+                                onClick={() => props.onSelectPlayer(player._id)}
+                                disabled={props.isMakingPick()}
+                                class={`w-full flex items-center justify-between p-4 rounded-lg border transition-all ${props.selectedPlayer() === player._id
                                     ? "bg-blue-600/20 border-blue-500"
                                     : "bg-slate-900/50 border-slate-600 hover:bg-slate-900/80"
-                                } ${props.isMakingPick()
-                                    ? "opacity-50 cursor-not-allowed"
-                                    : ""
-                                }`}
-                        >
-                            <div class="flex items-center gap-4">
-                                <div
-                                    class={`w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold ${player.avatar ? "hidden" : ""
-                                        }`}
-                                >
-                                    {player.name.charAt(0)}
+                                    } ${props.isMakingPick()
+                                        ? "opacity-50 cursor-not-allowed"
+                                        : ""
+                                    }`}
+                            >
+                                <div class="flex items-center gap-4">
+                                    <Show
+                                        when={player.avatar && !imageError()}
+                                        fallback={
+                                            <div class="w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center text-white font-bold">
+                                                {player.name.charAt(0)}
+                                            </div>
+                                        }
+                                    >
+                                        <img
+                                            src={player.avatar}
+                                            alt={player.name}
+                                            class="w-12 h-12 rounded-full object-cover border-2 border-slate-600"
+                                            onError={() => setImageError(true)}
+                                        />
+                                    </Show>
+                                    <div class="text-left">
+                                        <p class="text-white font-semibold">{player.name}</p>
+                                        <p class="text-slate-400 text-sm">{player.position}</p>
+                                    </div>
                                 </div>
-                                <div class="text-left">
-                                    <p class="text-white font-semibold">{player.name}</p>
-                                    <p class="text-slate-400 text-sm">{player.position}</p>
-                                </div>
-                            </div>
-                            {props.selectedPlayer() === player._id && (
-                                <span class="text-blue-400">✓</span>
-                            )}
-                        </button>
-                    )}
+                                {props.selectedPlayer() === player._id && (
+                                    <span class="text-blue-400">✓</span>
+                                )}
+                            </button>
+                        );
+                    }}
                 </For>
             </Show>
         </div>
