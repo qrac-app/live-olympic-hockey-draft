@@ -1,5 +1,5 @@
 import { ClientOnly, createFileRoute, useNavigate } from "@tanstack/solid-router";
-import { For, createSignal, Show, createMemo, Suspense } from "solid-js";
+import { For, createSignal, Show, Suspense } from "solid-js";
 import type { Id } from "convex/_generated/dataModel";
 import { Header } from "~/components/header";
 import { RosterView } from "~/components/post-draft/roster-view";
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_authed/draft/$id/post")({
   loader: async ({ params }) => {
     const dataPromise = fetchDraftPostData({ data: { draftId: params.id } });
     return { dataPromise };
-  },
+  }
 });
 
 function PostDraft() {
