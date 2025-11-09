@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/solid-router";
 import { Button } from "~/components/ui/button";
 import { Header } from "~/components/header";
-import { fetchUserDrafts } from "~/lib/server";
+import { fetchUser, fetchUserDrafts } from "~/lib/server";
 import DraftStatusCards from "~/components/draft-status-cards";
 import YourDrafts from "~/components/your-drafts";
 import { createAsync } from "~/lib/utils";
@@ -11,17 +11,15 @@ export const Route = createFileRoute("/_authed/dashboard")({
   component: Dashboard,
   loader: async () => {
     const draftsPromise = fetchUserDrafts();
-    return { draftsPromise };
+    const userPromise = fetchUser();
+    return { draftsPromise, userPromise };
   },
 });
 
 function Dashboard() {
-  const context = Route.useRouteContext();
   const loaderData = Route.useLoaderData();
   const drafts = createAsync(() => loaderData().draftsPromise);
-  const user = createAsync(() => context().userPromise, {
-    deferStream: true
-  });
+  const user = createAsync(() => loaderData().userPromise);
 
   return (
     <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800">
