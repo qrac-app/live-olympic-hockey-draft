@@ -46,8 +46,6 @@ export function SignUp(props: SignUpProps) {
         } catch (err: any) {
             setError("Sign up failed. Please try again.");
             console.error("Sign up error:", err);
-        } finally {
-            setIsLoading(false);
         }
     };
 

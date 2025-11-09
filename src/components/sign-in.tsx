@@ -44,8 +44,6 @@ export function SignIn(props: SignInProps) {
         } catch (err: any) {
             setError("Sign in failed. Please try again.");
             console.error("Sign in error:", err);
-        } finally {
-            setIsLoading(false);
         }
     };
 
