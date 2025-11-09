@@ -16,6 +16,9 @@ export const Route = createFileRoute("/_authed/draft/join")({
   loaderDeps: ({ search: { id } }) => ({ id }),
   loader: async ({ deps }) => {
     const draftId = deps.id as Id<"drafts">;
+    if (!draftId) {
+      return { draft: null };
+    }
     const draft = await fetchDraft({ data: { draftId } })
 
     return { draft };
@@ -139,7 +142,7 @@ function JoinDraft() {
           </div>
 
           {/* Warning Card */}
-          <Show when={loaderData().draft && loaderData().draft!.status === "PRE"} fallback={<div class="mt-6 bg-amber-900/20 border border-amber-700/30 rounded-lg p-4">
+          <Show when={!loaderData().draft || loaderData().draft!.status === "PRE"} fallback={<div class="mt-6 bg-amber-900/20 border border-amber-700/30 rounded-lg p-4">
             <div class="flex gap-3">
               <svg
                 class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5"
