@@ -16,7 +16,9 @@ export const Route = createRootRouteWithContext()({
   head: () => ({
     meta: [{
       title: 'Live Olympic Hockey Draft',
-      description: 'Tanstack Start Hackathon Project',
+    }, {
+      name: 'description',
+      content: 'Tanstack Start Hackathon Project',
     }],
     links: [{ rel: "stylesheet", href: styleCss }],
   }),
