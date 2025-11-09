@@ -61,3 +61,13 @@ export const fetchDraftPostData = createServerFn({ method: "GET" })
     }
   );
 
+
+export const fetchDraft = createServerFn({ method: "GET" })
+  .inputValidator((d: any) => d)
+  .handler(
+    async (ctx) => {
+      const draft = await fetchQuery(api.drafts.getDraftById, { draftId: ctx.data.draftId });
+      return draft;
+    }
+  );
+
