@@ -155,6 +155,7 @@ function CreateDraft() {
                   type="button"
                   onClick={() => navigate({ to: "/dashboard" })}
                   class="flex-1 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
+                  aria-label="Cancel draft creation and return to dashboard"
                 >
                   Cancel
                 </button>
@@ -162,6 +163,7 @@ function CreateDraft() {
                   type="submit"
                   disabled={isCreating()}
                   class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors shadow-lg shadow-blue-500/30"
+                  aria-label="Create new draft with provided details"
                 >
                   {isCreating() ? "Creating..." : "Create Draft"}
                 </button>

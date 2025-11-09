@@ -78,6 +78,7 @@ function App() {
               type="button"
               onClick={() => setIsSignUp(!isSignUp())}
               class="cursor-pointer w-full text-center text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline transition-all py-2 mt-4"
+              aria-label={isSignUp() ? "Switch to sign in form" : "Switch to sign up form"}
             >
               <Show
                 when={isSignUp()}

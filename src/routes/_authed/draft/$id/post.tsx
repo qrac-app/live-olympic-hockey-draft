@@ -105,6 +105,7 @@ function PostDraft() {
                         return (
                           <button
                             onClick={() => setSelectedTeamId(team.teamId)}
+                            aria-label={`Select team ${team.teamName}`}
                             class={`w-full text-left p-4 rounded-lg border transition-all ${selectedTeamId() === team.teamId
                               ? isUserTeam()
                                 ? "bg-blue-600/30 border-blue-500"
@@ -149,6 +150,7 @@ function PostDraft() {
             <button
               onClick={() => navigate({ to: "/dashboard" })}
               class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium"
+              aria-label="Back to dashboard"
             >
               Back to Dashboard
             </button>

@@ -124,6 +124,7 @@ function JoinDraft() {
                     <button
                       type="submit"
                       class="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors shadow-lg shadow-purple-500/30 whitespace-nowrap"
+                      aria-label="Join draft with provided ID"
                     >
                       Join
                     </button>

@@ -63,7 +63,7 @@ function Dashboard() {
             <div class="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-2xl p-8 border border-slate-700">
               <div class="grid sm:grid-cols-2 gap-4">
                 <Link to="/draft/create">
-                  <Button class="cursor-pointer w-full h-16 text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30">
+                  <Button class="cursor-pointer w-full h-16 text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30" aria-label="Create new draft">
                     <svg
                       class="w-5 h-5 mr-2"
                       fill="none"
@@ -84,6 +84,7 @@ function Dashboard() {
                   <Button
                     variant="outline"
                     class="cursor-pointer w-full h-16 text-base font-semibold border-2 border-slate-600 text-white hover:bg-slate-700"
+                    aria-label="Join existing draft"
                   >
                     <svg
                       class="w-5 h-5 mr-2"

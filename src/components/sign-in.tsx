@@ -84,6 +84,7 @@ export function SignIn(props: SignInProps) {
                         type="button"
                         onClick={() => setShowPassword(!showPassword())}
                         class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                        aria-label={showPassword() ? "Hide password" : "Show password"}
                     >
                         <Show
                             when={showPassword()}
@@ -127,6 +128,7 @@ export function SignIn(props: SignInProps) {
                 type="submit"
                 disabled={isLoading()}
                 class="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30"
+                aria-label="Sign in to your account"
             >
                 <Show
                     when={!isLoading()}

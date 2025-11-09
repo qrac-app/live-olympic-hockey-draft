@@ -34,6 +34,7 @@ export function PlayerList(props: PlayerListProps) {
                             <button
                                 onClick={() => props.onSelectPlayer(player._id)}
                                 disabled={props.isMakingPick()}
+                                aria-label={`Select player ${player.name}, position ${player.position}`}
                                 class={`w-full flex items-center justify-between p-4 rounded-lg border transition-all ${props.selectedPlayer() === player._id
                                     ? "bg-blue-600/20 border-blue-500"
                                     : "bg-slate-900/50 border-slate-600 hover:bg-slate-900/80"

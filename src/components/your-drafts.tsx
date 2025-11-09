@@ -35,7 +35,7 @@ export default function YourDrafts(props: YourDraftsProps) {
                         </p>
                         <div class="flex justify-center gap-3">
                             <Link to="/draft/create">
-                                <Button class="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
+                                <Button class="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800" aria-label="Create new draft">
                                     Create New Draft
                                 </Button>
                             </Link>
@@ -43,6 +43,7 @@ export default function YourDrafts(props: YourDraftsProps) {
                                 <Button
                                     variant="outline"
                                     class="cursor-pointer border-slate-600 text-white hover:bg-slate-700"
+                                    aria-label="Join existing draft"
                                 >
                                     Join Draft
                                 </Button>

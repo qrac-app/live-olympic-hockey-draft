@@ -41,6 +41,7 @@ export default function ShareLink(props: ShareLinkProps) {
             <button
               onClick={handleCopyLink}
               class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm whitespace-nowrap flex items-center gap-2"
+              aria-label={copySuccess() ? "Link copied to clipboard" : "Copy draft link to clipboard"}
             >
               <Show when={copySuccess()} fallback={<>📋 Copy</>}>
                 ✓ Copied!

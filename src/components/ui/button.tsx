@@ -33,6 +33,7 @@ type ButtonProps = {
   size?: ButtonSize
   class?: string | undefined
   children?: JSX.Element
+  "aria-label"?: string
 } & JSX.ButtonHTMLAttributes<HTMLButtonElement>
 
 const Button = (props: ButtonProps) => {

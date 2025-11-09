@@ -86,6 +86,7 @@ export function Header() {
                 disabled={isSigningOut()}
                 variant="outline"
                 class="cursor-pointer bg-white/10 hover:bg-white/20 text-white border-white/30"
+                aria-label="Sign out of your account"
               >
                 {isSigningOut() ? "Signing out..." : "Sign Out"}
               </Button>

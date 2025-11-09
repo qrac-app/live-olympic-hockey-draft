@@ -82,6 +82,7 @@ export function PlayerSelection(props: PlayerSelectionProps) {
                     onClick={makePick}
                     disabled={!selectedPlayer() || isMakingPick()}
                     class="w-full mt-4 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium shadow-lg"
+                    aria-label={isMakingPick() ? "Making pick..." : selectedPlayer() ? "Confirm player selection" : "Select a player first"}
                 >
                     {isMakingPick()
                         ? "Making Pick..."

@@ -57,6 +57,7 @@ export default function PreDraftActions(props: PreDraftActionsProps) {
         <button
           onClick={() => navigate({ to: "/dashboard" })}
           class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors font-medium"
+          aria-label="Back to dashboard"
         >
           Back to Dashboard
         </button>
@@ -64,6 +65,7 @@ export default function PreDraftActions(props: PreDraftActionsProps) {
           <button
             onClick={handleRandomizeDraftTeams}
             class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium shadow-lg shadow-green-500/30"
+            aria-label="Randomize draft order"
           >
             Randomize Order
           </button>
@@ -73,6 +75,7 @@ export default function PreDraftActions(props: PreDraftActionsProps) {
               isStarting()
             }
             class="cursor-pointer flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium shadow-lg shadow-green-500/30"
+            aria-label="Start the draft"
           >
             {isStarting()
               ? "Starting..."
