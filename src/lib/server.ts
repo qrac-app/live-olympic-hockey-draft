@@ -7,6 +7,12 @@ import { redirect } from "@tanstack/solid-router";
 import { getCookie, getRequest } from "@tanstack/solid-start/server";
 import { fetchQuery } from "./auth-server";
 import { api } from "convex/_generated/api";
+import { queryOptions } from "@tanstack/solid-query";
+
+export const authQueryOptions = queryOptions({
+  queryKey: ['auth'],
+  queryFn: () => fetchAuth(),
+});
 
 // Get auth information for SSR using available cookies
 export const fetchAuth = createServerFn({ method: "GET" }).handler(async () => {

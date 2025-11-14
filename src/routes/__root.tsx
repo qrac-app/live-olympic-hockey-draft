@@ -7,12 +7,13 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/solid-router-devtools";
 import { HydrationScript } from "solid-js/web";
 import { onMount, Suspense } from "solid-js";
+import { QueryClient } from "@tanstack/solid-query";
 import styleCss from "../styles.css?url";
-
-import { fetchAuth } from "~/lib/server.ts";
+import { SolidQueryDevtools } from '@tanstack/solid-query-devtools'
+import { authQueryOptions } from "~/lib/server.ts";
 import { AppConvexProvider, convexClient } from "~/lib/convex-client.tsx";
 
-export const Route = createRootRouteWithContext()({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [{
       title: 'Live Olympic Hockey Draft',
@@ -22,8 +23,8 @@ export const Route = createRootRouteWithContext()({
     }],
     links: [{ rel: "stylesheet", href: styleCss }],
   }),
-  beforeLoad: async () => {
-    const { session, token } = await fetchAuth();
+  beforeLoad: async ({ context }) => {
+    const { session, token } = await context.queryClient.ensureQueryData(authQueryOptions);
     return { session, token };
   },
   shellComponent: RootComponent,
@@ -51,6 +52,7 @@ function RootComponent() {
             {import.meta.env.DEV && <TanStackRouterDevtools />}
           </AppConvexProvider>
         </Suspense>
+        <SolidQueryDevtools buttonPosition="bottom-left" />
         <Scripts />
       </body>
     </html>

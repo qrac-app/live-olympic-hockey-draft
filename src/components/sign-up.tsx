@@ -2,12 +2,14 @@ import { createSignal, Show } from "solid-js";
 import { useNavigate } from "@tanstack/solid-router";
 import { authClient } from "~/lib/auth-client";
 import { Button } from "~/components/ui/button";
+import { useQueryClient } from "@tanstack/solid-query";
 
 interface SignUpProps {
     redirectTo?: string;
 }
 
 export function SignUp(props: SignUpProps) {
+    const queryClient = useQueryClient();
     const navigate = useNavigate();
     const [name, setName] = createSignal("");
     const [email, setEmail] = createSignal("");
@@ -38,6 +40,8 @@ export function SignUp(props: SignUpProps) {
                 setIsLoading(false);
                 return;
             }
+
+            await queryClient.removeQueries({ queryKey: ['auth'] });
 
             const redirectPath = props.redirectTo || "/dashboard";
             navigate({ to: redirectPath as any });

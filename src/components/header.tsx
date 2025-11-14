@@ -2,8 +2,10 @@ import { Link, useNavigate } from "@tanstack/solid-router";
 import { authClient } from "~/lib/auth-client";
 import { Button } from "~/components/ui/button";
 import { createSignal, Show } from "solid-js";
+import { useQueryClient } from "@tanstack/solid-query";
 
 export function Header() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [isSigningOut, setIsSigningOut] = createSignal(false);
   const session = authClient.useSession();
@@ -12,6 +14,7 @@ export function Header() {
     setIsSigningOut(true);
     try {
       await authClient.signOut();
+      await queryClient.removeQueries({ queryKey: ['auth'] });
       navigate({ to: "/", search: { redirect: window.location.pathname + window.location.search } });
     } catch (err) {
       console.error("Sign out error:", err);
