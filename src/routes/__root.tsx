@@ -5,12 +5,12 @@ import {
   createRootRouteWithContext,
 } from "@tanstack/solid-router";
 import { TanStackRouterDevtools } from "@tanstack/solid-router-devtools";
-import ConvexProvider from "../integrations/convex/provider.tsx";
 import { HydrationScript } from "solid-js/web";
-import { Suspense } from "solid-js";
+import { onMount, Suspense } from "solid-js";
 import styleCss from "../styles.css?url";
 
 import { fetchAuth } from "~/lib/server.ts";
+import { AppConvexProvider, convexClient } from "~/lib/convex-client.tsx";
 
 export const Route = createRootRouteWithContext()({
   head: () => ({
@@ -30,6 +30,14 @@ export const Route = createRootRouteWithContext()({
 });
 
 function RootComponent() {
+  const context = Route.useRouteContext();
+
+  onMount(() => {
+    convexClient.setAuth(async () => {
+      return context().token;
+    });
+  })
+
   return (
     <html lang="en">
       <head>
@@ -38,10 +46,10 @@ function RootComponent() {
       <body>
         <HeadContent />
         <Suspense>
-          <ConvexProvider>
+          <AppConvexProvider>
             <Outlet />
             {import.meta.env.DEV && <TanStackRouterDevtools />}
-          </ConvexProvider>
+          </AppConvexProvider>
         </Suspense>
         <Scripts />
       </body>
