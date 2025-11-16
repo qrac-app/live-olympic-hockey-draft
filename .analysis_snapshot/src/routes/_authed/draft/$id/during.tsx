@@ -1,0 +1,156 @@
+import { createFileRoute, useNavigate } from "@tanstack/solid-router";
+import { useMutation, useQuery } from "convex-solidjs";
+import { api } from "convex/_generated/api";
+import type { Id } from "convex/_generated/dataModel";
+import {
+  Show,
+  createSignal,
+  onMount,
+  onCleanup,
+  createEffect,
+  createMemo,
+} from "solid-js";
+import { Header } from "~/components/header";
+import { authClient } from "~/lib/auth-client";
+import { DraftHeader } from "~/components/during-draft/draft-header";
+import { OnTheClock } from "~/components/during-draft/on-the-clock";
+import { YourTurnBanner } from "~/components/during-draft/your-turn-banner";
+import { PlayerSelection } from "~/components/during-draft/player-selection";
+import { RecentPicks } from "~/components/during-draft/recent-picks";
+import { DraftStats } from "~/components/during-draft/draft-stats";
+import { Navigate } from "@tanstack/solid-router";
+
+export const Route = createFileRoute("/_authed/draft/$id/during")({
+  component: DuringDraft,
+});
+
+function DuringDraft() {
+  const params = Route.useParams();
+  const navigate = useNavigate();
+
+  const session = authClient.useSession();
+  const draftId = params().id as Id<"drafts">;
+  const { data: draft } = useQuery(api.drafts.getDraftById, { draftId });
+  const { data: currentPickData } = useQuery(api.draftPicks.getCurrentPick, {
+    draftId,
+  });
+
+  const { mutate: finishDraft } = useMutation(api.drafts.finishDraft);
+  const { mutate: advancePick } = useMutation(api.draftPicks.advancePick);
+  const [timeRemaining, setTimeRemaining] = createSignal<number>(45);
+  const [hasAdvanced, setHasAdvanced] = createSignal<boolean>(false);
+
+  const currentUserId = () => session()?.data?.user?.id;
+
+  const isMyTurn = (): boolean => {
+    const pick = currentPickData?.();
+    const userId = currentUserId();
+    return !!(pick && userId && pick.team.betterAuthUserId === userId);
+  };
+
+
+  const isHost = (): boolean => {
+    const user = session()?.data?.user;
+    return !!(
+      user &&
+      draft?.() &&
+      draft()!.hostBetterAuthUserId &&
+      draft()!.hostBetterAuthUserId === user.id
+    );
+  };
+
+  // Countdown timer and auto-advance
+  onMount(() => {
+    const updateCountdown = async () => {
+      // Don't auto-advance if a pick is being made
+      if (isHost() && (currentPickData?.()?.round ?? 0) >= 7) {
+        await handleFinishDraft();
+        return;
+      }
+
+      const pick = currentPickData?.();
+      if (pick && pick.startTime) {
+        const now = Date.now();
+        const elapsed = now - pick.startTime;
+        const remaining = Math.max(0, 45000 - elapsed); // 45 seconds
+        setTimeRemaining(Math.floor(remaining / 1000));
+
+        // Auto-advance if time is up (only once per pick)
+        if (remaining <= 0 && !hasAdvanced()) {
+          setHasAdvanced(true);
+          advancePick({ draftId }).catch((err) => {
+            console.error("Failed to advance pick:", err);
+            setHasAdvanced(false); // Reset on error so it can retry
+          });
+        }
+      }
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 100);
+
+    onCleanup(() => clearInterval(interval));
+  });
+
+  // Reset countdown and advance flag when pick changes
+  createEffect(() => {
+    const pick = currentPickData?.();
+    if (pick && pick.startTime) {
+      setHasAdvanced(false); // Reset advance flag for new pick
+      const now = Date.now();
+      const elapsed = now - pick.startTime;
+      const remaining = Math.max(0, 45000 - elapsed);
+      setTimeRemaining(Math.floor(remaining / 1000));
+    }
+  });
+
+  const handleFinishDraft = async () => {
+    await finishDraft({ draftId: params().id as Id<"drafts"> });
+    navigate({ to: "/draft/$id/post", params: { id: params().id } });
+  };
+
+  return (
+    <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-800">
+      <Show when={draft?.() && draft()!.status === "POST"}>
+        <Navigate to="/draft/$id/post" params={{ id: params().id }} />
+      </Show>
+      <Header />
+      <div class="p-6">
+        <div class="max-w-7xl mx-auto">
+          <DraftHeader
+            draftName={draft?.()?.name}
+            currentPickData={() => {
+              const pick = currentPickData?.();
+              return pick ? { round: pick.round, pickNumber: pick.pickNumber } : undefined;
+            }}
+          />
+
+          <div class="bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-2xl border border-slate-700 p-6 mb-6">
+            <OnTheClock
+              currentPickData={() => {
+                const pick = currentPickData?.();
+                return pick ? { team: { teamName: pick.team.teamName }, pickNumber: pick.pickNumber } : undefined;
+              }}
+              isMyTurn={isMyTurn()}
+              timeRemaining={timeRemaining()}
+            />
+
+            <YourTurnBanner isMyTurn={isMyTurn()} timeRemaining={timeRemaining()} />
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <PlayerSelection
+              isMyTurn={isMyTurn()}
+              draftId={draftId}
+            />
+
+            <div class="space-y-6">
+              <RecentPicks draftId={draftId} />
+              <DraftStats draftId={draftId} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
